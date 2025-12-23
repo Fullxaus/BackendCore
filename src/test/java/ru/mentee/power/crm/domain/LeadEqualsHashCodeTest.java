@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.*;
 public class LeadEqualsHashCodeTest {
 
     @Test
+
     void shouldBeReflexive_whenEqualsCalledOnSameObject() {
         // Given
         Address address = new Address("San Francisco", "123 Main St", "94105");
