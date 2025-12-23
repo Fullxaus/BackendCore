@@ -1,27 +1,44 @@
 package ru.mentee.power.crm.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public record Lead(
         UUID id,
-        String email,
-        String phone,
+        Contact contact,
         String company,
         String status
 ) {
-    // Кастомный конструктор с валидацией
+    // Компактный конструктор с валидацией
     public Lead {
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Email is required");
+        if (id == null) {
+            throw new IllegalArgumentException("ID не может быть null");
         }
-        if (phone == null || phone.isEmpty()) {
-            throw new IllegalArgumentException("Phone is required");
+        if (contact == null) {
+            throw new IllegalArgumentException("Контакт не может быть null");
         }
-        if (company == null || company.isEmpty()) {
-            throw new IllegalArgumentException("Company is required");
+        if (status == null || !isValidStatus(status)) {
+            throw new IllegalArgumentException("Недопустимый статус");
         }
-        if (status == null || status.isEmpty()) {
-            throw new IllegalArgumentException("Status is required");
-        }
+    }
+
+    // Валидация статуса
+    private boolean isValidStatus(String status) {
+        return "NEW".equals(status) ||
+                "QUALIFIED".equals(status) ||
+                "CONVERTED".equals(status);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lead lead = (Lead) o;
+        return id.equals(lead.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
