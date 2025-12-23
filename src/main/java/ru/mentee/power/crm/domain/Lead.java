@@ -1,64 +1,27 @@
 package ru.mentee.power.crm.domain;
 
-import java.util.Objects;
+import java.util.UUID;
 
-public class Lead {
-    private String id;
-    private String email;
-    private String phone;
-    private String company;
-    private String status;
-
-    public Lead(String id, String email, String phone, String company, String status) {
-        this.id = id;
-        this.email = email;
-        this.phone = phone;
-        this.company = company;
-        this.status = status;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    @Override
-    public String toString() {
-        return "Lead{" +
-                "id='" + id + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", company='" + company + '\'' +
-                ", status='" + status + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Lead lead = (Lead) o;
-        return Objects.equals(id, lead.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
+public record Lead(
+        UUID id,
+        String email,
+        String phone,
+        String company,
+        String status
+) {
+    // Кастомный конструктор с валидацией
+    public Lead {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (phone == null || phone.isEmpty()) {
+            throw new IllegalArgumentException("Phone is required");
+        }
+        if (company == null || company.isEmpty()) {
+            throw new IllegalArgumentException("Company is required");
+        }
+        if (status == null || status.isEmpty()) {
+            throw new IllegalArgumentException("Status is required");
+        }
     }
 }
-
