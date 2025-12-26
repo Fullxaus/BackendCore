@@ -14,8 +14,8 @@ public class LeadStorage {
      */
     public boolean add(Lead lead) {
         // Проверка на дубликат
-        for (int i = 0; i < size; i++) {
-            if (leads[i].contact().email().equals(lead.contact().email())) {
+        for (Lead existingLead : leads) {
+            if (existingLead != null && existingLead.email().equals(lead.email())) {
                 return false; // Дубликат найден
             }
         }

@@ -2,74 +2,32 @@ package ru.mentee.power.crm.domain;
 
 import java.util.UUID;
 
-public class Lead {
-    private UUID id;
-    private String email;
-    private String phone;
-    private String company;
-    private String status;
-
-    /**
-     * Конструктор для создания нового лида с генерацией случайного UUID.
-     *
-     * @param email   Электронный адрес лида.
-     * @param phone   Номер телефона лида.
-     * @param company Компания лида.
-     * @param status  Статус лида.
-     */
-    public Lead(String email, String phone, String company, String status) {
-        this.id = UUID.randomUUID();
-        this.email = email;
-        this.phone = phone;
-        this.company = company;
-        this.status = status;
-    }
-
-    /**
-     * Конструктор для создания лида с существующим UUID.
-     *
-     * @param id      Уникальный идентификатор лида.
-     * @param email   Электронный адрес лида.
-     * @param phone   Номер телефона лида.
-     * @param company Компания лида.
-     * @param status  Статус лида.
-     */
+public record Lead(
+        UUID id,
+        String email,
+        String phone,
+        String company,
+        String status
+) {
+    // Кастомный конструктор с валидацией
     public Lead(UUID id, String email, String phone, String company, String status) {
         this.id = id;
-        this.email = email;
-        this.phone = phone;
-        this.company = company;
-        this.status = status;
-    }
+        this.email = email.isEmpty() ? null : email;
+        this.phone = phone.isEmpty() ? null : phone;
+        this.company = company.isEmpty() ? null : company;
+        this.status = status.isEmpty() ? null : status;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    @Override
-    public String toString() {
-        return "Lead{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", company='" + company + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (phone == null || phone.isEmpty()) {
+            throw new IllegalArgumentException("Phone is required");
+        }
+        if (company == null || company.isEmpty()) {
+            throw new IllegalArgumentException("Company is required");
+        }
+        if (status == null || status.isEmpty()) {
+            throw new IllegalArgumentException("Status is required");
+        }
     }
 }

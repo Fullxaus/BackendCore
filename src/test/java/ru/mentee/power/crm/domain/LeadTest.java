@@ -1,6 +1,9 @@
 package ru.mentee.power.crm.domain;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.UUID;
 
@@ -13,7 +16,7 @@ public class LeadTest {
         Lead lead = new Lead(id, "email", "phone", "company", "status");
 
         // When
-        UUID result = lead.getId();
+        UUID result = lead.id();
 
         // Then
         assertThat(result).isEqualTo(id);
@@ -26,7 +29,7 @@ public class LeadTest {
         Lead lead = new Lead(UUID.randomUUID(), email, "phone", "company", "status");
 
         // When
-        String result = lead.getEmail();
+        String result = lead.email();
 
         // Then
         assertThat(result).isEqualTo(email);
@@ -39,7 +42,7 @@ public class LeadTest {
         Lead lead = new Lead(UUID.randomUUID(), "email", phone, "company", "status");
 
         // When
-        String result = lead.getPhone();
+        String result = lead.phone();
 
         // Then
         assertThat(result).isEqualTo(phone);
@@ -52,7 +55,7 @@ public class LeadTest {
         Lead lead = new Lead(UUID.randomUUID(), "email", "phone", company, "status");
 
         // When
-        String result = lead.getCompany();
+        String result = lead.company();
 
         // Then
         assertThat(result).isEqualTo(company);
@@ -65,7 +68,7 @@ public class LeadTest {
         Lead lead = new Lead(UUID.randomUUID(), "email", "phone", "company", status);
 
         // When
-        String result = lead.getStatus();
+        String result = lead.status();
 
         // Then
         assertThat(result).isEqualTo(status);
@@ -74,25 +77,17 @@ public class LeadTest {
     @Test
     void shouldReturnFormattedString_whenToStringCalled() {
         // Given
-        UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+        UUID id = UUID.randomUUID();
         Lead lead = new Lead(id, "test@example.com", "+1234567890", "Test Company", "New");
 
         // When
         String result = lead.toString();
 
         // Then
-        assertThat(result).isEqualTo("Lead{id=" + id + ", email='test@example.com', phone='+1234567890', company='Test Company', status='New'}");
-    }
-
-    @Test
-    void shouldGenerateRandomId_whenNoIdProvided() {
-        // Given
-        Lead lead = new Lead("email", "phone", "company", "status");
-
-        // When
-        UUID result = lead.getId();
-
-        // Then
-        assertThat(result).isNotNull();
+        assertThat(result).contains(String.valueOf(id));
+        assertThat(result).contains("test@example.com");
+        assertThat(result).contains("+1234567890");
+        assertThat(result).contains("Test Company");
+        assertThat(result).contains("New");
     }
 }
