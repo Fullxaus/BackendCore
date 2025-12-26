@@ -4,6 +4,7 @@ import ru.mentee.power.crm.domain.Lead;
 
 public class LeadStorage {
     private Lead[] leads = new Lead[100];
+    private int size = 0;
 
     /**
      * Добавляет лид в хранилище, если его email еще не существует.
@@ -19,16 +20,13 @@ public class LeadStorage {
             }
         }
 
-        // Поиск первой свободной ячейки
-        for (int i = 0; i < leads.length; i++) {
-            if (leads[i] == null) {
-                leads[i] = lead;
-                return true; // Лид добавлен
-            }
+        // Если хранилище заполнено
+        if (size == leads.length) {
+            throw new IllegalStateException("Storage is full, cannot add more leads");
         }
 
-        // Если хранилище заполнено
-        throw new IllegalStateException("Storage is full, cannot add more leads");
+        leads[size++] = lead;
+        return true; // Лид добавлен
     }
 
     /**
@@ -37,25 +35,8 @@ public class LeadStorage {
      * @return Массив лидов.
      */
     public Lead[] findAll() {
-        // Подсчет ненулевых элементов
-        int count = 0;
-        for (Lead lead : leads) {
-            if (lead != null) {
-                count++;
-            }
-        }
-
-        // Создание массива для результата
-        Lead[] result = new Lead[count];
-
-        // Заполнение результата ненулевыми элементами
-        int resultIndex = 0;
-        for (Lead lead : leads) {
-            if (lead != null) {
-                result[resultIndex++] = lead;
-            }
-        }
-
+        Lead[] result = new Lead[size];
+        System.arraycopy(leads, 0, result, 0, size);
         return result;
     }
 
@@ -65,12 +46,7 @@ public class LeadStorage {
      * @return Количество лидов.
      */
     public int size() {
-        int count = 0;
-        for (Lead lead : leads) {
-            if (lead != null) {
-                count++;
-            }
-        }
-        return count;
+        return size;
     }
 }
+

@@ -75,6 +75,7 @@ public class LeadEqualsHashCodeTest {
         assertThat(firstLead.hashCode()).isEqualTo(secondLead.hashCode());
     }
 
+
     @Test
     void shouldWorkInHashMap_whenLeadUsedAsKey() {
         // Given
@@ -92,14 +93,14 @@ public class LeadEqualsHashCodeTest {
     }
 
     @Test
-    void shouldNotBeEqual_whenIdsAreDifferent() {
+    void shouldNotBeEqual_whenContactsAreDifferent() {
         // Given
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         Lead firstLead = new Lead(id1, "ivan@mail.ru", "+7123", "TechCorp", "NEW");
         Lead differentLead = new Lead(id2, "ivan@mail.ru", "+7123", "TechCorp", "NEW");
 
-        // Then: Разные id = разные объекты (isNotEqualTo использует equals() внутри)
+        // Then: Разные контакты = разные объекты (isNotEqualTo использует equals() внутри)
         assertThat(firstLead).isNotEqualTo(differentLead);
     }
 }
