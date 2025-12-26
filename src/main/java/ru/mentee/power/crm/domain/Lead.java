@@ -10,7 +10,13 @@ public record Lead(
         String status
 ) {
     // Кастомный конструктор с валидацией
-    public Lead {
+    public Lead(UUID id, String email, String phone, String company, String status) {
+        this.id = id;
+        this.email = email.isEmpty() ? null : email;
+        this.phone = phone.isEmpty() ? null : phone;
+        this.company = company.isEmpty() ? null : company;
+        this.status = status.isEmpty() ? null : status;
+
         if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("Email is required");
         }
