@@ -7,33 +7,48 @@ import static org.assertj.core.api.Assertions.*;
 public class CustomerTest {
 
     @Test
-    void shouldReuseContact_whenCreatingCustomer() {
-        // Создать Contact и два разных Address (один для contact, один для billing)
-        Address contactAddress = new Address("San Francisco", "123 Main St", "94105");
-        Contact contact = new Contact("example@example.com", "+1234567890", contactAddress);
+    void shouldCreateCustomer() {
+        // Given
+        Contact contact = new Contact("John", "Doe", "example@example.com");
         Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
-        // Создать Customer с contact и billingAddress
+        // When
         Customer customer = new Customer(UUID.randomUUID(), contact, billingAddress, "GOLD");
 
-        // Проверить что customer.contact().address() != customer.billingAddress()
-        assertThat(customer.contact().address()).isNotEqualTo(customer.billingAddress());
+        // Then
+        assertThat(customer.contact()).isEqualTo(contact);
+        assertThat(customer.billingAddress()).isEqualTo(billingAddress);
+        assertThat(customer.loyaltyTier()).isEqualTo("GOLD");
     }
 
     @Test
-    void shouldDemonstrateContactReuse_acrossLeadAndCustomer() {
-        // Создать одинаковый Contact (email, phone, address)
-        Address address = new Address("San Francisco", "123 Main St", "94105");
-        Contact contact = new Contact("example@example.com", "+1234567890", address);
+    void shouldNotCreateCustomerWithInvalidLoyaltyTier() {
+        // Given
+        Contact contact = new Contact("John", "Doe", "example@example.com");
+        Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
-        // Использовать в Lead и Customer
-        Lead lead = new Lead(UUID.randomUUID(), contact, "Example Company", "NEW");
-        Customer customer = new Customer(UUID.randomUUID(), contact, new Address("New York", "456 Broadway", "10001"), "GOLD");
+        // When и Then
+        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, "INVALID"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 
-        // Продемонстрировать что Contact переиспользуется без дублирования кода
-        assertThat(lead.contact()).isEqualTo(contact);
-        assertThat(customer.contact()).isEqualTo(contact);
-        assertThat(lead.contact().address()).isEqualTo(address);
-        assertThat(customer.contact().address()).isEqualTo(address);
+    @Test
+    void shouldNotCreateCustomerWithNullContact() {
+        // Given
+        Address billingAddress = new Address("New York", "456 Broadway", "10001");
+
+        // When и Then
+        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), null, billingAddress, "GOLD"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldNotCreateCustomerWithNullBillingAddress() {
+        // Given
+        Contact contact = new Contact("John", "Doe", "example@example.com");
+
+        // When и Then
+        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, null, "GOLD"))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
