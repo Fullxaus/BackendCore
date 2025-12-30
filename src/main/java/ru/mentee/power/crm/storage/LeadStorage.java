@@ -1,9 +1,12 @@
 package ru.mentee.power.crm.storage;
 
-import ru.mentee.power.crm.domain.Lead;
+import ru.mentee.power.crm.model.Lead;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LeadStorage {
-    private Lead[] leads = new Lead[100];
+    private List<Lead> leads = new ArrayList<>();
 
     /**
      * Добавляет лид в хранилище, если его email еще не существует.
@@ -12,51 +15,20 @@ public class LeadStorage {
      * @return true, если лид успешно добавлен, false, если email уже существует.
      */
     public boolean add(Lead lead) {
-        // Проверка на дубликат
-        for (Lead existingLead : leads) {
-            if (existingLead != null && existingLead.email().equals(lead.email())) {
-                return false; // Дубликат найден
-            }
+        if (leads.stream().anyMatch(l -> l.contact().email().equals(lead.contact().email()))) {
+            return false; // Дубликат найден
         }
-
-        // Поиск первой свободной ячейки
-        for (int i = 0; i < leads.length; i++) {
-            if (leads[i] == null) {
-                leads[i] = lead;
-                return true; // Лид добавлен
-            }
-        }
-
-        // Если хранилище заполнено
-        throw new IllegalStateException("Storage is full, cannot add more leads");
+        leads.add(lead);
+        return true; // Лид добавлен
     }
 
     /**
-     * Возвращает массив всех добавленных лидов.
+     * Возвращает список всех добавленных лидов.
      *
-     * @return Массив лидов.
+     * @return Список лидов.
      */
-    public Lead[] findAll() {
-        // Подсчет ненулевых элементов
-        int count = 0;
-        for (Lead lead : leads) {
-            if (lead != null) {
-                count++;
-            }
-        }
-
-        // Создание массива для результата
-        Lead[] result = new Lead[count];
-
-        // Заполнение результата ненулевыми элементами
-        int resultIndex = 0;
-        for (Lead lead : leads) {
-            if (lead != null) {
-                result[resultIndex++] = lead;
-            }
-        }
-
-        return result;
+    public List<Lead> findAll() {
+        return new ArrayList<>(leads); // defensive copy
     }
 
     /**
@@ -65,12 +37,6 @@ public class LeadStorage {
      * @return Количество лидов.
      */
     public int size() {
-        int count = 0;
-        for (Lead lead : leads) {
-            if (lead != null) {
-                count++;
-            }
-        }
-        return count;
+        return leads.size();
     }
 }
