@@ -22,72 +22,81 @@ public class LeadRepositoryTest {
 
     @Test
     void shouldSaveAndFindLeadById_whenLeadSaved() {
-        // Given
+        // Дано
         UUID id = UUID.randomUUID();
-        Lead lead = new Lead(id, "email", "phone", "company", "status");
+        Contact contact = new Contact("ivan@mail.ru", "+79001234567", new Address("улица", "дом", "10001"));
+        Lead lead = new Lead(id, contact, "Acme Corp", "NEW");
 
-        // When
+        // Когда
         repository.save(lead);
 
-        // Then
+        // Тогда
         assertThat(repository.findById(id)).isNotNull();
     }
 
+
     @Test
     void shouldReturnNull_whenLeadNotFound() {
-        // Given
+        // Дано
         UUID id = UUID.randomUUID();
 
-        // When
+        // Когда
         Lead lead = repository.findById(id);
 
-        // Then
+        // Тогда
         assertThat(lead).isNull();
     }
 
+
     @Test
     void shouldReturnAllLeads_whenMultipleLeadsSaved() {
-        // Given
+        // Дано
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
-        repository.save(new Lead(id1, "email1", "phone1", "company1", "status1"));
-        repository.save(new Lead(id2, "email2", "phone2", "company2", "status2"));
+        Contact contact1 = new Contact("ivan@mail.ru", "+79001234567", new Address("Boston", "Smith", "111"));
+        Contact contact2 = new Contact("ivan@mail.ru", "+79001234567", new Address("London", "QueenStreet", "001100"));
+        repository.save(new Lead(id1, contact1, "Acme Corp", "NEW"));
+        repository.save(new Lead(id2, contact2, "TechCorp", "QUALIFIED"));
 
-        // When
+        // Когда
         List<Lead> leads = repository.findAll();
 
-        // Then
+        // Тогда
         assertThat(leads).hasSize(2);
     }
 
     @Test
     void shouldDeleteLead_whenLeadExists() {
-        // Given
+        // Дано
         UUID id = UUID.randomUUID();
-        Lead lead = new Lead(id, "email", "phone", "company", "status");
+        Contact contact = new Contact("ivan@mail.ru", "+79001234567", new Address("Boston", "Smith", "111"));
+        Lead lead = new Lead(id, contact, "Acme Corp", "NEW");
         repository.save(lead);
 
-        // When
+        // Когда
         repository.delete(id);
 
-        // Then
+        // Тогда
         assertThat(repository.findById(id)).isNull();
         assertThat(repository.size()).isEqualTo(0);
     }
 
+
     @Test
     void shouldOverwriteLead_whenSaveWithSameId() {
-        // Given
+        // Дано
         UUID id = UUID.randomUUID();
-        Lead lead1 = new Lead(id, "email1", "phone1", "company1", "status1");
-        Lead lead2 = new Lead(id, "email2", "phone2", "company2", "status2");
+        Contact contact1 = new Contact("ivan@mail.ru", "+79001234567", new Address("Boston", "Smith", "111"));
+        Contact contact2 = new Contact("ivan@mail.ru", "+79001234567", new Address("London", "QueenStreet", "001100"));
+        Lead lead1 = new Lead(id, contact1, "Acme Corp", "NEW");
+        Lead lead2 = new Lead(id, contact2, "TechCorp", "QUALIFIED");
 
-        // When
+        // Когда
         repository.save(lead1);
         repository.save(lead2);
 
-        // Then
-        assertThat(repository.findById(id).email()).isEqualTo("email2");
+        // Тогда
+        assertThat(repository.findById(id).contact().email()).isEqualTo(contact2.email());
         assertThat(repository.size()).isEqualTo(1);
     }
 
@@ -97,11 +106,8 @@ public class LeadRepositoryTest {
         List<Lead> leadList = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             UUID id = UUID.randomUUID();
-            String email = "email" + i + "@test.com";
-            String phone = "+7" + i;
-            String company = "Company" + i;
-            String status = "NEW";
-            Lead lead = new Lead(id, email, phone, company, status);
+            Contact contact = new Contact("ivan@mail.ru", "+79001234567", new Address("Boston", "Smith", "111"));
+            Lead lead = new Lead(id, contact, "Company" + i, "NEW");
             repository.save(lead);
             leadList.add(lead);
         }
@@ -134,9 +140,9 @@ public class LeadRepositoryTest {
     @Test
     void shouldSaveBothLeads_evenWithSameEmailAndPhone_becauseRepositoryDoesNotCheckBusinessRules() {
         // Given: два лида с разными UUID но одинаковыми контактами
-        Contact sharedContact = new Contact("Ivan", "Petrov", "ivan@mail.ru");
-        Lead originalLead = new Lead(UUID.randomUUID(), sharedContact.email(), "+79001234567", "Acme Corp", "NEW");
-        Lead duplicateLead = new Lead(UUID.randomUUID(), sharedContact.email(), "+79001234567", "TechCorp", "HOT");
+        Contact sharedContact = new Contact("ivan@mail.ru", "+79001234567", new Address("Boston", "Smith", "111"));
+        Lead originalLead = new Lead(UUID.randomUUID(), sharedContact, "Acme Corp", "NEW");
+        Lead duplicateLead = new Lead(UUID.randomUUID(), sharedContact, "TechCorp", "CONVERTED");
 
         // When: сохраняем оба
         repository.save(originalLead);
@@ -149,7 +155,6 @@ public class LeadRepositoryTest {
         // Решение: Service Layer в Sprint 5 будет проверять бизнес-правила
         // перед вызовом repository.save()
     }
-
 
 
 

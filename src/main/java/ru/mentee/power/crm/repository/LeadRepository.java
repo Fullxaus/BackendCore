@@ -4,7 +4,7 @@ import ru.mentee.power.crm.model.Lead;
 
 import java.util.*;
 
-public class LeadRepository {
+public class LeadRepository   {
     private final Map<UUID, Lead> storage = new HashMap<>();
 
     public void save(Lead lead) {
@@ -25,5 +25,11 @@ public class LeadRepository {
 
     public int size() {
         return storage.size();
+    }
+
+    public Optional<Lead> findByEmail(String email) {
+        return storage.values().stream()
+                .filter(lead -> lead.contact().email().equals(email))
+                .findFirst();
     }
 }
