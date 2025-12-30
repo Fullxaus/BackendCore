@@ -9,7 +9,7 @@ public class CustomerTest {
     @Test
     void shouldCreateCustomer() {
         // Given
-        Contact contact = new Contact("John", "Doe", "example@example.com");
+        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
         Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
         // When
@@ -24,11 +24,25 @@ public class CustomerTest {
     @Test
     void shouldNotCreateCustomerWithInvalidLoyaltyTier() {
         // Given
-        Contact contact = new Contact("John", "Doe", "example@example.com");
+        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
         Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
         // When и Then
+        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, ""))
+                .isInstanceOf(IllegalArgumentException.class);
+
         assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, "INVALID"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldNotCreateCustomerWithNullId() {
+        // Given
+        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
+        Address billingAddress = new Address("New York", "456 Broadway", "10001");
+
+        // When и Then
+        assertThatThrownBy(() -> new Customer(null, contact, billingAddress, "GOLD"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -45,10 +59,21 @@ public class CustomerTest {
     @Test
     void shouldNotCreateCustomerWithNullBillingAddress() {
         // Given
-        Contact contact = new Contact("John", "Doe", "example@example.com");
+        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
 
         // When и Then
         assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, null, "GOLD"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldNotCreateCustomerWithNullLoyaltyTier() {
+        // Given
+        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
+        Address billingAddress = new Address("New York", "456 Broadway", "10001");
+
+        // When и Then
+        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
