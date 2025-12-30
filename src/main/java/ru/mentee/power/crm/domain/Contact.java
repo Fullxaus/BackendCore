@@ -10,4 +10,7 @@ public record Contact(
             throw new IllegalArgumentException("Email, phone, and address cannot be null or empty");
         }
     }
+    public Contact(String email) {
+        this(email, "", null);
+    }
 }
