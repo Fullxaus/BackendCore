@@ -1,33 +1,21 @@
 package ru.mentee.power.crm.model;
 
+import ru.mentee.power.crm.domain.Contact;
+
 import java.util.UUID;
 
 public record Lead(
         UUID id,
-        String email,
-        String phone,
+        Contact contact,
         String company,
         String status
 ) {
-    // Кастомный конструктор с валидацией
-    public Lead(UUID id, String email, String phone, String company, String status) {
-        this.id = id;
-        this.email = email.isEmpty() ? null : email;
-        this.phone = phone.isEmpty() ? null : phone;
-        this.company = company.isEmpty() ? null : company;
-        this.status = status.isEmpty() ? null : status;
-
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Email is required");
+    public Lead {
+        if (id == null || contact == null || company == null || company.isEmpty() || status == null || status.isEmpty()) {
+            throw new IllegalArgumentException("Id, contact, company, and status cannot be null or empty");
         }
-        if (phone == null || phone.isEmpty()) {
-            throw new IllegalArgumentException("Phone is required");
-        }
-        if (company == null || company.isEmpty()) {
-            throw new IllegalArgumentException("Company is required");
-        }
-        if (status == null || status.isEmpty()) {
-            throw new IllegalArgumentException("Status is required");
+        if (!status.equals("NEW") && !status.equals("QUALIFIED") && !status.equals("CONVERTED")) {
+            throw new IllegalArgumentException("Invalid status. Must be one of: NEW, QUALIFIED, CONVERTED");
         }
     }
 }

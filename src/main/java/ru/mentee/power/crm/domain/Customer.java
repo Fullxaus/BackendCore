@@ -8,26 +8,12 @@ public record Customer(
         Address billingAddress,
         String loyaltyTier
 ) {
-    // Компактный конструктор с валидацией
     public Customer {
-        if (id == null) {
-            throw new IllegalArgumentException("ID не может быть null");
+        if (id == null || contact == null || billingAddress == null || loyaltyTier == null || loyaltyTier.isEmpty()) {
+            throw new IllegalArgumentException("Id, contact, billingAddress, and loyaltyTier cannot be null or empty");
         }
-        if (contact == null) {
-            throw new IllegalArgumentException("Контакт не может быть null");
+        if (!loyaltyTier.equals("BRONZE") && !loyaltyTier.equals("SILVER") && !loyaltyTier.equals("GOLD")) {
+            throw new IllegalArgumentException("Invalid loyaltyTier. Must be one of: BRONZE, SILVER, GOLD");
         }
-        if (billingAddress == null) {
-            throw new IllegalArgumentException("Платёжный адрес не может быть null");
-        }
-        if (loyaltyTier == null || !isValidLoyaltyTier(loyaltyTier)) {
-            throw new IllegalArgumentException("Недопустимый уровень лояльности");
-        }
-    }
-
-    // Валидация уровня лояльности
-    private boolean isValidLoyaltyTier(String loyaltyTier) {
-        return "BRONZE".equals(loyaltyTier) ||
-                "SILVER".equals(loyaltyTier) ||
-                "GOLD".equals(loyaltyTier);
     }
 }
