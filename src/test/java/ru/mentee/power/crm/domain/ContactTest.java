@@ -7,37 +7,48 @@ public class ContactTest {
 
     @Test
     void shouldCreateContact_whenValidData() {
-        // Создать Contact с firstName="John", lastName="Doe", email="john@example.com"
-        Contact contact = new Contact("John", "Doe", "john@example.com");
+        // Создать Contact с email="john@example.com", phone="1234567890", address=new Address("New York", "456 Broadway", "10001")
+        Address address = new Address("New York", "456 Broadway", "10001");
+        Contact contact = new Contact("john@example.com", "1234567890", address);
 
         // Проверить что все компоненты возвращают правильные значения
-        assertThat(contact.firstName()).isEqualTo("John");
-        assertThat(contact.lastName()).isEqualTo("Doe");
         assertThat(contact.email()).isEqualTo("john@example.com");
+        assertThat(contact.phone()).isEqualTo("1234567890");
+        assertThat(contact.address()).isEqualTo(address);
     }
 
     @Test
-    void shouldBeEqual_whenSameData() {
-        // Создать два Contact с одинаковыми данными
-        Contact contact1 = new Contact("John", "Doe", "john@example.com");
-        Contact contact2 = new Contact("John", "Doe", "john@example.com");
+    void shouldThrowException_whenEmailIsNullOrEmpty() {
+        // Given
+        Address address = new Address("New York", "456 Broadway", "10001");
 
-        // Проверить что они равны через equals
-        assertThat(contact1).isEqualTo(contact2);
+        // When и Then
+        assertThatThrownBy(() -> new Contact(null, "1234567890", address))
+                .isInstanceOf(IllegalArgumentException.class);
 
-        // Проверить что hashCode одинаковый
-        assertThat(contact1.hashCode()).isEqualTo(contact2.hashCode());
+        assertThatThrownBy(() -> new Contact("", "1234567890", address))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void shouldNotBeEqual_whenDifferentData() {
-        // Создать два Contact с разными данными
-        Contact contact1 = new Contact("John", "Doe", "john@example.com");
-        Contact contact2 = new Contact("Jane", "Doe", "jane@example.com");
+    void shouldThrowException_whenPhoneIsNullOrEmpty() {
+        // Given
+        Address address = new Address("New York", "456 Broadway", "10001");
 
-        // Проверить что они НЕ равны
-        assertThat(contact1).isNotEqualTo(contact2);
+        // When и Then
+        assertThatThrownBy(() -> new Contact("john@example.com", null, address))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThatThrownBy(() -> new Contact("john@example.com", "", address))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldThrowException_whenAddressIsNull() {
+        // Given
+
+        // When и Then
+        assertThatThrownBy(() -> new Contact("john@example.com", "1234567890", null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
-
-
