@@ -8,7 +8,6 @@ import ru.mentee.power.crm.repository.LeadRepository;
 import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.servlet.LeadListServlet;
 import jakarta.servlet.annotation.WebServlet;
-
 import java.io.File;
 
 public class Main {
