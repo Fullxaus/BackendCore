@@ -11,7 +11,6 @@ import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.repository.LeadRepository;
 import jakarta.servlet.annotation.WebServlet;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -37,7 +36,6 @@ public class LeadListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
 
         LeadService leadService = (LeadService) getServletContext().getAttribute("leadService");
 
