@@ -32,6 +32,9 @@ dependencies {
         implementation "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
         implementation "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
 
+        implementation "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
+        implementation "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
+
         testRuntimeOnly'org.junit.platform:junit-platform-launcher'
         implementation "org.jetbrains:annotations:24.0.1"
         testImplementation platform('org.junit:junit-bom:5.10.0')
