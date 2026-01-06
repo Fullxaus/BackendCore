@@ -4,6 +4,7 @@ plugins {
     id 'checkstyle'
     id 'io.freefair.lombok' version '8.6'
     id 'application'
+
 }
 
 group = 'ru.mentee.power'
@@ -16,6 +17,7 @@ repositories {
 ext {
     servletVersion = '6.1.0'
     tomcatVersion = '11.0.1'
+
 }
 
 
@@ -24,7 +26,6 @@ dependencies {
 
         implementation "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
         implementation "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
-
 
         testRuntimeOnly'org.junit.platform:junit-platform-launcher'
         implementation "org.jetbrains:annotations:24.0.1"
@@ -45,6 +46,8 @@ dependencies {
         implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1'
     }
 }
+
+
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
