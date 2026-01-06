@@ -1,5 +1,9 @@
 package ru.mentee.power.crm.servlet;
 
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.output.StringOutput;
+import gg.jte.resolve.DirectoryCodeResolver;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,10 +12,24 @@ import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.service.LeadService;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Writer;
+import java.nio.file.Path;
 import java.util.List;
 
 public class LeadListServlet extends HttpServlet {
+
+    private TemplateEngine templateEngine;
+
+    @Override
+    public void init() throws ServletException {
+        try {
+            Path templatePath = Path.of("src/main/jte");
+            DirectoryCodeResolver codeResolver = new DirectoryCodeResolver(templatePath);
+            this.templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
+        } catch (Exception e) {
+            throw new ServletException("Failed to init TemplateEngine", e);
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -28,36 +46,15 @@ public class LeadListServlet extends HttpServlet {
             List<Lead> leads = leadService.findAll();
 
             response.setContentType("text/html; charset=UTF-8");
-            PrintWriter writer = response.getWriter();
+            Writer writer = response.getWriter();
 
-            writer.println("<!DOCTYPE html>");
-            writer.println("<html>");
-            writer.println("<head><title>CRM - Lead List</title></head>");
-            writer.println("<body>");
-            writer.println("<h1>Lead List</h1>");
-            writer.println("<table border='1'>");
-            writer.println("<thead>");
-            writer.println("<tr>");
-            writer.println("<th>Email</th>");
-            writer.println("<th>Company</th>");
-            writer.println("<th>Status</th>");
-            writer.println("</tr>");
-            writer.println("</thead>");
-            writer.println("<tbody>");
+            // Render template with named parameter "leads"
+            StringOutput out = new StringOutput();
+            templateEngine.render("leads/list.jte", leads, out);
+            writer.write(out.toString());
 
-            for (Lead lead : leads) {
-                writer.println("<tr>");
-                writer.println("<td>" + lead.contact().email() + "</td>");
-                writer.println("<td>" + lead.company() + "</td>");
-                writer.println("<td>" + lead.status() + "</td>");
-                writer.println("</tr>");
-            }
-
-            writer.println("</tbody>");
-            writer.println("</table>");
-            writer.println("</body>");
-            writer.println("</html>");
         } catch (Exception e) {
+            e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка при получении данных");
         }
     }
