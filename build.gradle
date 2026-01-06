@@ -4,9 +4,10 @@ plugins {
     id 'checkstyle'
     id 'io.freefair.lombok' version '8.6'
     id 'application'
-
     id 'gg.jte.gradle' version '3.1.15'
 
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'ru.mentee.power'
@@ -20,17 +21,16 @@ ext {
     servletVersion = '6.1.0'
     tomcatVersion = '11.0.1'
     jteVersion = '3.1.15'
-
+    springBootVersion = '3.2.0'
 }
 
 
 dependencies {
-    dependencies {
+
+        implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+
         implementation "gg.jte:jte:${jteVersion}"           // <-- added
         implementation "gg.jte:jte-runtime:${jteVersion}"   // <-- added
-
-        implementation "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
-        implementation "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
 
         implementation "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
         implementation "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
@@ -52,7 +52,7 @@ dependencies {
 
         implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
         implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1'
-    }
+
 }
 
 jte {
