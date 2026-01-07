@@ -1,3 +1,4 @@
+
 plugins {
     id 'java'
     id 'jacoco'
@@ -5,8 +6,7 @@ plugins {
     id 'io.freefair.lombok' version '8.6'
     id 'application'
     id 'gg.jte.gradle' version '3.1.15'
-
-    id 'org.springframework.boot' version '3.2.0'
+    id 'org.springframework.boot' version '4.0.0'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
@@ -18,50 +18,30 @@ repositories {
 }
 
 ext {
-    servletVersion = '6.1.0'
-    tomcatVersion = '11.0.1'
     jteVersion = '3.1.15'
-    springBootVersion = '3.2.0'
 }
 
-
 dependencies {
+    implementation platform("org.springframework.boot:spring-boot-dependencies:3.2.0")
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-        implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    implementation "gg.jte:jte:${jteVersion}"
+    implementation "gg.jte:jte-runtime:${jteVersion}"
 
-        implementation "gg.jte:jte:${jteVersion}"           // <-- added
-        implementation "gg.jte:jte-runtime:${jteVersion}"   // <-- added
+    implementation "org.jetbrains:annotations:24.0.1"
 
-        implementation "jakarta.servlet:jakarta.servlet-api:${servletVersion}"
-        implementation "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-        testRuntimeOnly'org.junit.platform:junit-platform-launcher'
-        implementation "org.jetbrains:annotations:24.0.1"
-        testImplementation platform('org.junit:junit-bom:5.10.0')
-        testImplementation 'org.junit.jupiter:junit-jupiter-api'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-        testImplementation 'org.junit.jupiter:junit-jupiter-params'
-        testImplementation 'org.mockito:mockito-core:5.20.0'
-        testImplementation 'org.assertj:assertj-core:3.22.0'
-        testImplementation 'org.mockito:mockito-junit-jupiter:5.20.0'
-
-        compileOnly 'org.projectlombok:lombok:1.18.32'
-        annotationProcessor 'org.projectlombok:lombok:1.18.32'
-        testCompileOnly 'org.projectlombok:lombok:1.18.32'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
-
-        implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
-        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1'
-
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 jte {
-    sourceDirectory = project.layout.projectDirectory.dir("src/main/jte").asFile.toPath()
-    contentType = "Html"
+    sourceDirectory = java.nio.file.Paths.get("src/main/jte")
+    contentType = gg.jte.ContentType.Html
     binaryStaticContent = false
 }
-
-
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -70,16 +50,15 @@ java {
 
 test {
     useJUnitPlatform()
-    finalizedBy tasks.named('jacocoTestReport')
+    finalizedBy jacocoTestReport
 }
 
-// ----- JaCoCo -----
 jacoco {
     toolVersion = "0.8.10"
 }
 
 jacocoTestReport {
-    dependsOn tasks.named('test')
+    dependsOn test
     reports {
         xml.required = false
         csv.required = false
@@ -89,16 +68,14 @@ jacocoTestReport {
 
 checkstyle {
     toolVersion = '10.12.5'
-    //config/checkstyle/google_checks.xml
     configFile = file("${rootDir}/config/checkstyle/google_checks.xml")
-
 }
 
 application {
     mainClass = 'ru.mentee.power.crm.Main'
 }
 
-// Интегрируем checkstyle в общую задачу проверки
 tasks.named('check') {
     dependsOn tasks.named('checkstyleMain')
-    dependsOn tasks.named('checkstyleTest')}
+    dependsOn tasks.named('checkstyleTest')
+}
