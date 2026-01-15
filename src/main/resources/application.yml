@@ -4,7 +4,9 @@ server:
 spring:
   application:
     name: mentee-power-crm
+
 gg:
   jte:
-    templateLocation: /jte/
+    templateLocation: classpath:/jte
     developmentMode: true
+

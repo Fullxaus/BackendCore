@@ -1,11 +1,10 @@
-
 plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
     id 'io.freefair.lombok' version '8.6'
     id 'application'
-    id 'gg.jte.gradle' version '3.1.15'
+    id 'gg.jte.gradle' version '3.2.1'
     id 'org.springframework.boot' version '4.0.0'
     id 'io.spring.dependency-management' version '1.1.4'
 }
@@ -18,14 +17,13 @@ repositories {
 }
 
 ext {
-    jteVersion = '3.1.15'
+    jteVersion = '3.2.1'
 }
 
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:3.2.0")
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "gg.jte:jte-spring-boot-starter-3:3.2.1"
-   // implementation "gg.jte:jte-spring-boot-starter"
     implementation "gg.jte:jte:${jteVersion}"
     implementation "gg.jte:jte-runtime:${jteVersion}"
 
@@ -39,9 +37,11 @@ dependencies {
 }
 
 jte {
+
     sourceDirectory = java.nio.file.Paths.get("src/main/jte")
     contentType = gg.jte.ContentType.Html
     binaryStaticContent = false
+
 }
 
 java {
@@ -73,7 +73,7 @@ checkstyle {
 }
 
 application {
-    mainClass = 'ru.mentee.power.crm.Main'
+    mainClass = 'ru.mentee.power.crm.Application'
 }
 
 tasks.named('check') {
