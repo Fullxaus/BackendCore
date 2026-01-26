@@ -1,6 +1,10 @@
 package ru.mentee.power.crm;
 
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.*;
+import org.springframework.boot.SpringApplication;
+
 import java.net.http.*;
 import java.net.URI;
 import static org.assertj.core.api.Assertions.*;
@@ -70,7 +74,7 @@ public class StackComparisonTest {
 
     @Test
     @DisplayName("Измерение времени старта обоих стеков")
-    void shouldMeasureStartupTime() {
+    void shouldMeasureStartupTime() throws LifecycleException {
         long servletStartupMs = measureServletStartup();
         long springStartupMs = measureSpringBootStartup();
 
@@ -85,28 +89,23 @@ public class StackComparisonTest {
         assertThat(springStartupMs).isLessThan(15_000);
     }
 
-    private long measureServletStartup() {
+    private long measureServletStartup() throws LifecycleException {
         long startTime = System.nanoTime();
-        // Здесь нужно реализовать запуск Tomcat Embed и измерение времени
-        // Например, это может быть что-то вроде:
-        /*
+
         Tomcat tomcat = new Tomcat();
         tomcat.setPort(SERVLET_PORT);
         tomcat.getConnector();
         tomcat.start();
-        */
+
         return (System.nanoTime() - startTime) / 1_000_000; // Конвертация в миллисекунды
     }
 
     private long measureSpringBootStartup() {
         long startTime = System.nanoTime();
-        // В этом месте нужно запустить Spring Boot приложение
-        /*
+
         SpringApplication app = new SpringApplication(Application.class);
         app.run();
-        */
+
         return (System.nanoTime() - startTime) / 1_000_000; // Конвертация в миллисекунды
     }
-
-
 }
