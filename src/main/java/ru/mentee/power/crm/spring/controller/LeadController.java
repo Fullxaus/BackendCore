@@ -34,9 +34,19 @@ public class LeadController {
     }
 
     @GetMapping("/leads")
-    public String showLeads(Model model) {
-        List<Lead> list = leadService.findAll();
-        model.addAttribute("leads", list == null ? List.of() : list);
-        return "leads/list";
+    public String showLeads(
+            @RequestParam(required = false) LeadStatus status, // nullable параметр
+            Model model
+    ) {
+        List<Lead> leads;
+        if (status == null) {
+            leads = leadService.findAll(); // Без фильтрации, если статус не указан
+        } else {
+            leads = leadService.findByStatus(status); // Фильтруем по указанному статусу
+        }
+
+        model.addAttribute("leads", leads);                 // Передача списка лидов в представление
+        model.addAttribute("currentFilter", status);        // Текущий фильтр для отображения в представлении
+        return "leads/list";                                // Переход к странице отображения лидов
     }
 }
