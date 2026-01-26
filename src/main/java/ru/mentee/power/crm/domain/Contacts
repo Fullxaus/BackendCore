@@ -1,4 +1,4 @@
-/*
+
 package ru.mentee.power.crm.domain;
 
 public class Contacts {
@@ -7,4 +7,4 @@ public class Contacts {
     private String lastName;
     private String email;
 }
-*/
+
