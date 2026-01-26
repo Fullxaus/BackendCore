@@ -9,7 +9,6 @@ import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
 import java.util.List;
 
-
 @Controller
 public class LeadController {
     private final LeadService leadService;
