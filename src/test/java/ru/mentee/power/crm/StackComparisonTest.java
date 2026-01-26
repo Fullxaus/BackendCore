@@ -4,7 +4,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.SpringApplication;
-
 import java.net.http.*;
 import java.net.URI;
 import static org.assertj.core.api.Assertions.*;
