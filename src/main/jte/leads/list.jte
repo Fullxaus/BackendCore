@@ -1,3 +1,4 @@
+
 @param java.util.List<ru.mentee.power.crm.model.Lead> leads
 
 <div class="bg-white rounded-lg shadow-md p-6">
