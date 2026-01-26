@@ -48,6 +48,7 @@
   </table>
 </div>
 
+
 <form action="/lead" method="post">
     <input name="email" placeholder="Email" />
     <input name="company" placeholder="Компания" />
