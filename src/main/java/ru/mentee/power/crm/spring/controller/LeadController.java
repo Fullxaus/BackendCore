@@ -33,7 +33,6 @@ public class LeadController {
         return "redirect:/leads";
     }
 
-
     @GetMapping("/leads")
     public String showLeads(Model model) {
         List<Lead> list = leadService.findAll();
