@@ -1,5 +1,6 @@
 @param java.util.List<ru.mentee.power.crm.model.Lead> leads
 
+
 <div class="bg-white rounded-lg shadow-md p-6">
     <h2 class="text-2xl font-bold mb-4">Lead List</h2>
 
@@ -26,6 +27,7 @@
         </tbody>
     </table>
 </div>
+
 
 <form action="/lead" method="post">
     <input name="email" placeholder="Email" />
