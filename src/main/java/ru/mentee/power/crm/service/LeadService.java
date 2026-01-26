@@ -10,6 +10,7 @@ import ru.mentee.power.crm.repository.LeadRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class LeadService {
@@ -62,6 +63,12 @@ public class LeadService {
         return repository.findAll().stream()
                 .filter(lead -> lead.contact().email().equals(email))
                 .findFirst();
+    }
+
+    public List<Lead> findByStatus(LeadStatus status) {
+        return repository.findAll().stream()
+                .filter(lead -> lead.status().equals(status.name())) // Обратите внимание на .name()
+                .collect(Collectors.toList());
     }
 }
 
