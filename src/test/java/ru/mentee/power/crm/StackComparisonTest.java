@@ -107,4 +107,5 @@ public class StackComparisonTest {
         */
         return (System.nanoTime() - startTime) / 1_000_000; // Конвертация в миллисекунды
     }
+
 }
