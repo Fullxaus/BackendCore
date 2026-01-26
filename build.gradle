@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
-    id 'io.freefair.lombok' version '8.6'
     id 'application'
     id 'gg.jte.gradle' version '3.2.1'
     id 'org.springframework.boot' version '4.0.0'
@@ -36,12 +35,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
-jte {
 
-    sourceDirectory = java.nio.file.Paths.get("src/main/jte")
+jte {
+    sourceDirectory = file("src/main/jte").toPath()
     contentType = gg.jte.ContentType.Html
     binaryStaticContent = false
-
 }
 
 java {
