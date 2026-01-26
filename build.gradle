@@ -23,7 +23,7 @@ ext {
 dependencies {
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
     implementation platform("org.springframework.boot:spring-boot-dependencies:3.2.0")
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "gg.jte:jte-spring-boot-starter-3:3.2.1"
