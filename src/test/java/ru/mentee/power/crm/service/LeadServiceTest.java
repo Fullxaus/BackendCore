@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
-import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import ru.mentee.power.crm.repository.LeadRepository;
 
 import java.util.List;
@@ -46,7 +45,6 @@ public class LeadServiceTest {
         assertThat(result.contact().address().city()).isEqualTo("Test City");
         assertThat(result.contact().address().zip()).isEqualTo("12345");
     }
-
 
 
     @Test
@@ -117,6 +115,37 @@ public class LeadServiceTest {
     void shouldReturnEmpty_whenLeadNotFound() {
         // Given/When
         Optional<Lead> result = service.findByEmail("nonexistent@example.com");
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void shouldReturnOnlyNewLeads_whenFindByStatusNew() {
+        // Given
+        LeadRepository repository = new LeadRepository();
+        LeadService leadService = new LeadService(repository);
+
+        leadService.addLead("test1@example.com", "Company1", LeadStatus.NEW, new Address("Moscow", "Suvorova", "123456"), "1234567890");
+        leadService.addLead("test2@example.com", "Company2", LeadStatus.NEW, new Address("St.Petersburg", "Pushkinskaya", "987654"), "9876543210");
+        leadService.addLead("test3@example.com", "Company3", LeadStatus.NEW, new Address("Kazan", "Kazanskaya", "111111"), "1111111111");
+
+        // When
+        List<Lead> result = leadService.findByStatus(LeadStatus.NEW);
+
+        // Then
+        assertThat(result).hasSize(3);
+        assertThat(result).allMatch(lead -> lead.status().equals(LeadStatus.NEW.name()));
+    }
+
+    @Test
+    void shouldReturnEmptyList_whenNoLeadsWithStatus() {
+        // Given
+        LeadRepository repository = new LeadRepository();
+        LeadService leadService = new LeadService(repository);
+
+        // When
+        List<Lead> result = leadService.findByStatus(LeadStatus.NEW);
 
         // Then
         assertThat(result).isEmpty();
