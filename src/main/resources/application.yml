@@ -1,3 +1,7 @@
+logging:
+  level:
+    ROOT: DEBUG
+
 server:
   port: 8081
 
@@ -7,6 +11,8 @@ spring:
 
 gg:
   jte:
-    templateLocation: classpath:/jte
+    templateLocation: src/main/resources/jte/
     developmentMode: true
+
+
 
