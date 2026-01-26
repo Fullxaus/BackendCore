@@ -6,7 +6,6 @@ import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.repository.LeadRepository;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
