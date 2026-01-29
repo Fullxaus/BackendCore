@@ -1,11 +1,14 @@
 package ru.mentee.power.crm;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
@@ -65,8 +68,8 @@ public class StackComparisonTest {
         servletPort = tomcat.getConnector().getLocalPort();
 
         // === Запуск Spring Boot ===
-        // Абсолютный путь к шаблонам (application.yml: gg.jte.templateLocation), чтобы работало при любом working dir (CI/локально)
-        Path jtePath = Path.of("src", "main", "resources", "jte").toAbsolutePath();
+        // Путь к шаблонам JTE: из classpath (build/resources/main/jte на CI и локально) или из исходников
+        Path jtePath = resolveJteTemplatePath();
         String[] args = {
                 "--server.port=0",
                 "--spring.main.web-application-type=servlet",
@@ -133,6 +136,23 @@ public class StackComparisonTest {
 
         System.out.printf("Servlet: %d лидов, Spring: %d лидов%n",
                 servletRows, springRows);
+    }
+
+    /**
+     * Путь к каталогу JTE-шаблонов: из classpath (build/resources/main/jte) на CI и при сборке,
+     * иначе из исходников src/main/resources/jte.
+     */
+    private static Path resolveJteTemplatePath() {
+        URL resource = StackComparisonTest.class.getClassLoader().getResource("jte/leads/list.jte");
+        if (resource != null && "file".equals(resource.getProtocol())) {
+            try {
+                Path file = Path.of(resource.toURI());
+                return file.getParent().getParent(); // jte/
+            } catch (URISyntaxException e) {
+                // fallback
+            }
+        }
+        return Path.of("src", "main", "resources", "jte").toAbsolutePath();
     }
 
     private int countTableRows(String html) {
