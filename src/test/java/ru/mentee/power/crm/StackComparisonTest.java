@@ -13,8 +13,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import ru.mentee.power.crm.repository.LeadRepository;
 import ru.mentee.power.crm.servlet.LeadListServlet;
 
@@ -152,16 +150,5 @@ public class StackComparisonTest {
         // Просто фиксируем что оба стартуют за разумное время
         assertThat(servletStartupTimeMs).isLessThan(5_000);
         assertThat(springStartupTimeMs).isLessThan(17_000);
-    }
-
-
-    @RestController
-    static class TestController {
-        @GetMapping("/leads")
-        public String leads() {
-            return "<table>"
-                    + "<tr></tr><tr></tr><tr></tr><tr></tr><tr></tr><tr></tr>"
-                    + "</table>";
-        }
     }
 }
