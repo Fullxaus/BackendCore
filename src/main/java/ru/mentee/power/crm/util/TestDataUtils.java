@@ -27,6 +27,7 @@ public class TestDataUtils {
 
     private static final Random random = new Random();
 
+
     /**
      * Создает и добавляет набор тестовых лидов.
      *

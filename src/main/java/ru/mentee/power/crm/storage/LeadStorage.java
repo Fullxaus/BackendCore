@@ -8,6 +8,7 @@ import java.util.List;
 public class LeadStorage {
     private List<Lead> leads = new ArrayList<>();
 
+
     /**
      * Добавляет лид в хранилище, если его email еще не существует.
      *
