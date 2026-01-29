@@ -1,5 +1,3 @@
-
-
 package ru.mentee.power.crm.web;
 
 import com.sun.net.httpserver.HttpServer;
