@@ -65,11 +65,14 @@ public class StackComparisonTest {
         servletPort = tomcat.getConnector().getLocalPort();
 
         // === Запуск Spring Boot ===
+        // Абсолютный путь к шаблонам (application.yml: gg.jte.templateLocation), чтобы работало при любом working dir (CI/локально)
+        Path jtePath = Path.of("src", "main", "resources", "jte").toAbsolutePath();
         String[] args = {
                 "--server.port=0",
                 "--spring.main.web-application-type=servlet",
                 "--spring.main.banner-mode=off",
-                "--logging.level.root=WARN"
+                "--logging.level.root=WARN",
+                "--gg.jte.templateLocation=" + jtePath.toString().replace('\\', '/')
         };
         start = System.nanoTime();
         springContext = SpringApplication.run(Application.class, args);
