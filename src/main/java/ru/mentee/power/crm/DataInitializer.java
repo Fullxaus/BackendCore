@@ -15,6 +15,7 @@ public class DataInitializer implements CommandLineRunner {
         this.leadService = leadService;
     }
 
+
     @Override
     public void run(String... args) throws Exception {
         leadService.addLead("test1@example.com", "Company1", LeadStatus.NEW, new Address("Moscow", "Suvorova", "123456"), "1234567890");
