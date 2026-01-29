@@ -12,15 +12,12 @@ import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mentee.power.crm.repository.LeadRepository;
 import ru.mentee.power.crm.servlet.LeadListServlet;
-
 import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.util.TestDataUtils;
-
 import static org.assertj.core.api.Assertions.*;
 
 /**
