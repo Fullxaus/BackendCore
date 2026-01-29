@@ -5,6 +5,7 @@ import ru.mentee.power.crm.model.Lead;
 
 import java.util.*;
 
+
 @Component
 public class LeadRepository   {
     private final Map<UUID, Lead> storage = new HashMap<>();
