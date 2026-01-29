@@ -1,23 +1,21 @@
 @param java.util.List<ru.mentee.power.crm.model.Lead> leads
-
-@param List<Lead> leads
-@param LeadStatus currentFilter
+@param ru.mentee.power.crm.model.LeadStatus currentFilter
 
 <div class="mb-4 flex gap-2">
   <a href="/leads"
-     class="px-4 py-2 rounded ${currentFilter == null ? 'bg-blue-500 text-white' : 'bg-gray-200'}">
+     class='px-4 py-2 rounded ${currentFilter == null ? "bg-blue-500 text-white" : "bg-gray-200"}'>
     Все
   </a>
   <a href="/leads?status=NEW"
-     class="px-4 py-2 rounded ${currentFilter == LeadStatus.NEW ? 'bg-blue-500 text-white' : 'bg-gray-200'}">
+     class='px-4 py-2 rounded ${currentFilter == ru.mentee.power.crm.model.LeadStatus.NEW ? "bg-blue-500 text-white" : "bg-gray-200"}'>
     NEW
   </a>
   <a href="/leads?status=CONTACTED"
-     class="px-4 py-2 rounded ${currentFilter == LeadStatus.CONTACTED ? 'bg-blue-500 text-white' : 'bg-gray-200'}">
+     class='px-4 py-2 rounded ${currentFilter == ru.mentee.power.crm.model.LeadStatus.CONTACTED ? "bg-blue-500 text-white" : "bg-gray-200"}'>
     CONTACTED
   </a>
   <a href="/leads?status=QUALIFIED"
-     class="px-4 py-2 rounded ${currentFilter == LeadStatus.QUALIFIED ? 'bg-blue-500 text-white' : 'bg-gray-200'}">
+     class='px-4 py-2 rounded ${currentFilter == ru.mentee.power.crm.model.LeadStatus.QUALIFIED ? "bg-blue-500 text-white" : "bg-gray-200"}'>
     QUALIFIED
   </a>
 </div>
@@ -39,9 +37,9 @@
     <tbody>
       @for(var lead : leads)
       <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-        <td class="py-4 px-6">${lead.getName()}</td>
-        <td class="py-4 px-6">${lead.getCompany()}</td>
-        <td class="py-4 px-6">${lead.getStatus()}</td>
+        <td class="py-4 px-6">${lead.contact().email()}</td>
+        <td class="py-4 px-6">${lead.company()}</td>
+        <td class="py-4 px-6">${lead.status()}</td>
       </tr>
       @endfor
     </tbody>
