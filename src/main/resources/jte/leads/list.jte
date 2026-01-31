@@ -24,6 +24,14 @@
 <p class="text-sm text-gray-600 mb-2">Показаны лиды со статусом: ${currentFilter}</p>
 @endif
 
+<div class="mb-4">
+  <a href="/leads/new"
+     class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+    Добавить лида
+  </a>
+</div>
+
+
 <!-- Таблица лидов -->
 <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
   <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -46,22 +54,6 @@
   </table>
 </div>
 
-<form action="/lead" method="post">
-    <input name="email" placeholder="Email" />
-    <input name="company" placeholder="Компания" />
-    <input name="phone" placeholder="Телефон" />
 
-    <select name="status">
-        <option value="NEW">NEW</option>
-        <option value="IN_PROGRESS">IN_PROGRESS</option>
-        <option value="CLOSED">CLOSED</option>
-    </select>
-
-    <input name="city" placeholder="Город" />
-    <input name="street" placeholder="Улица" />
-    <input name="zip" placeholder="Индекс" />
-
-    <button type="submit">Создать лид</button>
-</form>
 
 
