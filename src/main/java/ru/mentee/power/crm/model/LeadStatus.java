@@ -2,6 +2,8 @@ package ru.mentee.power.crm.model;
 
 public enum LeadStatus {
     NEW("Новый"),
+    CONTACTED("На связи"),
+    QUALIFIED("Квалифицирован"),
     ORDER_FORMING("Заказ формируется"),
     SORTED("Отсортирован"),
     ASSEMBLED("Собран"),

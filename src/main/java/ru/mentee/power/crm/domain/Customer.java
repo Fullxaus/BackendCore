@@ -8,6 +8,7 @@ public record Customer(
         Address billingAddress,
         String loyaltyTier
 ) {
+
     public Customer {
         if (id == null || contact == null || billingAddress == null || loyaltyTier == null || loyaltyTier.isEmpty()) {
             throw new IllegalArgumentException("Id, contact, billingAddress, and loyaltyTier cannot be null or empty");
