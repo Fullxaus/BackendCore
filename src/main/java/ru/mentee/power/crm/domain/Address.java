@@ -4,6 +4,7 @@ public record Address(
         String city,
         String street,
         String zip
+
 ) {
     public Address {
         if (city == null || city.isEmpty() || zip == null || zip.isEmpty()) {
