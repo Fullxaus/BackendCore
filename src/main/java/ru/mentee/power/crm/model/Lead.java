@@ -3,6 +3,7 @@ package ru.mentee.power.crm.model;
 import ru.mentee.power.crm.domain.Contact;
 import java.util.UUID;
 
+
 public record Lead(
         UUID id,
         Contact contact,
