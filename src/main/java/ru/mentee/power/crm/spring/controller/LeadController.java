@@ -17,18 +17,33 @@ public class LeadController {
         this.leadService = leadService;
     }
 
-    @PostMapping("/lead")
-    public String createLead(
-                             @RequestParam String email,
-                             @RequestParam String company,
-                             @RequestParam LeadStatus status,
-                             @RequestParam String phone,
-                             @RequestParam String city,
-                             @RequestParam String street,
-                             @RequestParam String zip  ){
-        Address adress = new Address(city, street, zip);
-        leadService.addLead(email,company,status,adress,phone);
+    @GetMapping("/leads/new")//получение данных
+    public String showCreateForm(Model model) {
+        model.addAttribute("statuses", LeadStatus.values());
+        return "leads/create";
+    }
 
+    @PostMapping("/leads")//отправка данных на сервер
+    public String createLead(
+            @RequestParam String email,
+            @RequestParam String company,
+            @RequestParam LeadStatus status) {
+        Address address = new Address("-", "-", "-");
+        leadService.addLead(email, company, status, address, "-");
+        return "redirect:/leads";
+    }
+
+    @PostMapping("/lead")
+    public String createLeadFull(
+            @RequestParam String email,
+            @RequestParam String company,
+            @RequestParam LeadStatus status,
+            @RequestParam String phone,
+            @RequestParam String city,
+            @RequestParam String street,
+            @RequestParam String zip) {
+        Address address = new Address(city, street, zip);
+        leadService.addLead(email, company, status, address, phone);
         return "redirect:/leads";
     }
 
