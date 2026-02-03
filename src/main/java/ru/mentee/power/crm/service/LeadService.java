@@ -1,5 +1,6 @@
 package ru.mentee.power.crm.service;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
@@ -10,10 +11,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class LeadService {
 
+    private static final Logger log = LoggerFactory.getLogger(LeadService.class);
     private final LeadRepository repository;
 
     // DI через конструктор — не создаём repository внутри!
@@ -21,6 +25,10 @@ public class LeadService {
         this.repository = repository;
     }
 
+    @PostConstruct
+    void init() {
+        log.info("LeadService @PostConstruct init() called - Bean lifecycle phase");
+    }
 
     /**
      * Создаёт нового лида с проверкой уникальности email.
