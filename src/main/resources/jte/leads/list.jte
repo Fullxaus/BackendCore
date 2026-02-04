@@ -39,6 +39,7 @@
         <th scope="col" class="py-3 px-6">Имя</th>
         <th scope="col" class="py-3 px-6">Компании</th>
         <th scope="col" class="py-3 px-6">Статус</th>
+        <th scope="col" class="py-3 px-6">Действия</th>
       </tr>
     </thead>
     <tbody>
@@ -47,6 +48,9 @@
         <td class="py-4 px-6">${lead.contact().email()}</td>
         <td class="py-4 px-6">${lead.company()}</td>
         <td class="py-4 px-6">${lead.status()}</td>
+        <td class="py-4 px-6">
+          <a href="/leads/${lead.id()}/edit" class="text-blue-600 hover:underline">Редактировать</a>
+        </td>
       </tr>
       @endfor
     </tbody>

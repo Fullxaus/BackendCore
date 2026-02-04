@@ -26,10 +26,9 @@ public class DataInitializerTest {
         // act
         dataInitializer.run();
 
-        // assert number of invocations
+
         verify(leadService, times(5)).addLead(anyString(), anyString(), any(LeadStatus.class), any(Address.class), anyString());
 
-        // capture arguments to inspect them
         ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> companyCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<LeadStatus> statusCaptor = ArgumentCaptor.forClass(LeadStatus.class);
@@ -44,7 +43,6 @@ public class DataInitializerTest {
                 phoneCaptor.capture()
         );
 
-        // verify captured values (order same as in DataInitializer)
         assertEquals("test1@example.com", emailCaptor.getAllValues().get(0));
         assertEquals("Company1", companyCaptor.getAllValues().get(0));
         assertEquals(LeadStatus.NEW, statusCaptor.getAllValues().get(0));

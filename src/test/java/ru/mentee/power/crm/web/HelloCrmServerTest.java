@@ -22,7 +22,7 @@ public class HelloCrmServerTest {
     private HelloCrmServer server;
     private int port;
 
-    // Находим свободный порт перед запуском сервера
+
     private int findFreePort() throws IOException {
         try (ServerSocket socket = new ServerSocket(0)) {
             socket.setReuseAddress(true);

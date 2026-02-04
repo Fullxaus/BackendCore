@@ -9,6 +9,7 @@ import ru.mentee.power.crm.repository.LeadRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -151,5 +152,36 @@ public class LeadServiceTest {
         assertThat(result).isEmpty();
     }
 
+    @Test
+    void shouldUpdateLead_inRepository() {
+        // Given: existing lead
+        Address address = new Address("City", "Street", "12345");
+        Lead created = service.addLead("old@example.com", "OldCo", LeadStatus.NEW, address, "+7999");
+        UUID id = created.id();
 
+        // When: update with new data
+        Lead updated = service.update(id, "new@example.com", "+7111", "NewCo", LeadStatus.CONTACTED);
+
+        // Then: repository contains updated data
+        assertThat(updated.contact().email()).isEqualTo("new@example.com");
+        assertThat(updated.contact().phone()).isEqualTo("+7111");
+        assertThat(updated.company()).isEqualTo("NewCo");
+        assertThat(updated.status()).isEqualTo(LeadStatus.CONTACTED.name());
+        assertThat(updated.id()).isEqualTo(id);
+
+        Optional<Lead> fromRepo = service.findById(id);
+        assertThat(fromRepo).isPresent();
+        assertThat(fromRepo.get().company()).isEqualTo("NewCo");
+    }
+
+    @Test
+    void shouldThrow_whenUpdatingNonexistentLead() {
+        UUID nonexistentId = UUID.randomUUID();
+        Address address = new Address("City", "Street", "12345");
+
+        assertThatThrownBy(() ->
+                service.update(nonexistentId, "x@x.com", "+7", "Co", LeadStatus.NEW))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Lead not found");
+    }
 }

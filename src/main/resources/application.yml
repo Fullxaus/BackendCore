@@ -2,9 +2,12 @@
 logging:
   level:
     ROOT: DEBUG
+    org.springframework.web: DEBUG
 
 server:
   port: 8081
+  error:
+    include-stacktrace: always
 
 spring:
   application:
@@ -12,7 +15,7 @@ spring:
 
 gg:
   jte:
-    templateLocation: src/main/resources/jte/
+    templateLocation: src/main/jte
     developmentMode: true
 
 
