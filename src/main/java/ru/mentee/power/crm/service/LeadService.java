@@ -70,5 +70,22 @@ public class LeadService {
                 .filter(lead -> lead.status().equals(status.name())) // Обратите внимание на .name()
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Обновляет существующего лида по ID.
+     *
+     * @throws IllegalStateException если лид с указанным ID не найден
+     */
+    public Lead update(UUID id, String email, String phone, String company, LeadStatus status) {
+        Lead existing = repository.findById(id);
+        if (existing == null) {
+            throw new IllegalStateException("Lead not found: " + id);
+        }
+        Address address = existing.contact().address();
+        Contact contact = new Contact(email, phone, address);
+        Lead updated = new Lead(id, contact, company, status.name());
+        repository.save(updated);
+        return updated;
+    }
 }
 
