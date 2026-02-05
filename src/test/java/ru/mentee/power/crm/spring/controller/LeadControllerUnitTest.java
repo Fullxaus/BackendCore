@@ -102,7 +102,7 @@ public class LeadControllerUnitTest {
         verify(mockLeadService).findById(id);
         verify(model).addAttribute("lead", lead);
         verify(model).addAttribute("statuses", LeadStatus.values());
-        assertThat(viewName).isEqualTo("spring/edit");
+        assertThat(viewName).isEqualTo("edit");
     }
 
     @Test
