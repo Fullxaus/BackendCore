@@ -52,7 +52,7 @@ public class LeadEditFlowTest {
         String formView = controller.showEditForm(id, model);
 
         // Then: form is displayed with lead data
-        assertThat(formView).isEqualTo("spring/edit");
+        assertThat(formView).isEqualTo("edit");
         verify(model).addAttribute(eq("lead"), any(Lead.class));
         verify(model).addAttribute("statuses", LeadStatus.values());
 
