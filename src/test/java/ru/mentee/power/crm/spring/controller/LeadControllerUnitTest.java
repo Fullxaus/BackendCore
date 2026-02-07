@@ -26,7 +26,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 public class LeadControllerUnitTest {
 
@@ -130,5 +129,30 @@ public class LeadControllerUnitTest {
 
         verify(mockLeadService).update(id, "new@example.com", "+7999", "NewCo", LeadStatus.CONTACTED);
         assertThat(viewName).isEqualTo("redirect:/leads");
+    }
+
+    @Test
+    void deleteLead_shouldCallServiceAndRedirect() {
+        UUID id = UUID.randomUUID();
+
+        String viewName = controller.deleteLead(id);
+
+        verify(mockLeadService).delete(id);
+        assertThat(viewName).isEqualTo("redirect:/leads");
+    }
+
+
+    @Test
+    void deleteLead_shouldThrow404_whenLeadNotFound() {
+        UUID nonexistentId = UUID.randomUUID();
+        org.mockito.Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"))
+                .when(mockLeadService).delete(nonexistentId);
+
+        assertThatThrownBy(() -> controller.deleteLead(nonexistentId))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> {
+                    ResponseStatusException rse = (ResponseStatusException) ex;
+                    assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+                });
     }
 }

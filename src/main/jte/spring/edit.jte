@@ -14,6 +14,7 @@
              placeholder="test@example.com" />
     </div>
 
+
     <div>
       <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
       <input type="tel" id="phone" name="phone" value="${lead.contact().phone()}"

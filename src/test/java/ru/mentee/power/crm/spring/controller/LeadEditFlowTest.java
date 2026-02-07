@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
  */
 public class LeadEditFlowTest {
 
+
     private LeadController controller;
     private LeadService leadService;
     private LeadRepository repository;
@@ -83,5 +84,26 @@ public class LeadEditFlowTest {
         controller.showEditForm(lead.id(), model);
 
         verify(model).addAttribute("lead", lead);
+    }
+
+    @Test
+    void fullDeleteFlow_postDeleteRedirectsAndLeadRemovedFromRepository() {
+        // Given: существующий лид с ID в Repository
+        Address address = new Address("Moscow", "Tverskaya", "101000");
+        Lead existing = new Lead(UUID.randomUUID(),
+                new Contact("todelete@test.com", "+7999", address),
+                "ToDeleteCo", LeadStatus.NEW.name());
+        repository.save(existing);
+        UUID id = existing.id();
+        assertThat(repository.findById(id)).isNotNull();
+
+        // When: пользователь нажимает "Удалить" -> POST /leads/{id}/delete
+        String redirect = controller.deleteLead(id);
+
+        // Then: redirect на /leads
+        assertThat(redirect).isEqualTo("redirect:/leads");
+
+        // Then: удалённый лид больше не отображается (страница обновляется — список без него)
+        assertThat(repository.findById(id)).isNull();
     }
 }

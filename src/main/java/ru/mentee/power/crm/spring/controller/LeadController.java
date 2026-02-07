@@ -80,6 +80,7 @@ public class LeadController {
         return "edit";
     }
 
+
     @PostMapping("/leads/{id}")
     public String updateLead(
             @PathVariable UUID id,
@@ -89,6 +90,15 @@ public class LeadController {
             @RequestParam LeadStatus status) {
         String safePhone = (phone == null || phone.isBlank()) ? "-" : phone;
         leadService.update(id, email, safePhone, company, status);
+        return "redirect:/leads";
+    }
+
+
+
+
+    @PostMapping("/leads/{id}/delete")
+    public String deleteLead(@PathVariable UUID id) {
+        leadService.delete(id);
         return "redirect:/leads";
     }
 }
