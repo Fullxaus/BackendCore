@@ -58,25 +58,27 @@ public class LeadControllerUnitTest {
 
     @Test
     void shouldDelegateShowLeadsToService_whenNoFilter() {
-        when(mockLeadService.findAll()).thenReturn(Collections.emptyList());
+        when(mockLeadService.findLeads(null, null)).thenReturn(Collections.emptyList());
 
-        String viewName = controller.showLeads(null, model);
+        String viewName = controller.showLeads(null, null, model);
 
-        verify(mockLeadService).findAll();
+        verify(mockLeadService).findLeads(null, null);
         verify(model).addAttribute(eq("leads"), any());
-        verify(model).addAttribute("currentFilter", null);
+        verify(model).addAttribute("search", "");
+        verify(model).addAttribute("status", "");
         assertThat(viewName).isEqualTo("leads/list");
     }
 
     @Test
-    void shouldDelegateShowLeadsToService_whenStatusFilter() {
-        when(mockLeadService.findByStatus(LeadStatus.NEW)).thenReturn(Collections.emptyList());
+    void shouldDelegateShowLeadsToService_whenSearchAndStatusFilter() {
+        when(mockLeadService.findLeads("test", "NEW")).thenReturn(Collections.emptyList());
 
-        String viewName = controller.showLeads(LeadStatus.NEW, model);
+        String viewName = controller.showLeads("test", "NEW", model);
 
-        verify(mockLeadService).findByStatus(LeadStatus.NEW);
+        verify(mockLeadService).findLeads("test", "NEW");
         verify(model).addAttribute(eq("leads"), any());
-        verify(model).addAttribute("currentFilter", LeadStatus.NEW);
+        verify(model).addAttribute("search", "test");
+        verify(model).addAttribute("status", "NEW");
         assertThat(viewName).isEqualTo("leads/list");
     }
 
@@ -130,6 +132,8 @@ public class LeadControllerUnitTest {
         verify(mockLeadService).update(id, "new@example.com", "+7999", "NewCo", LeadStatus.CONTACTED);
         assertThat(viewName).isEqualTo("redirect:/leads");
     }
+
+
 
     @Test
     void deleteLead_shouldCallServiceAndRedirect() {

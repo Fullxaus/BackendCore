@@ -39,6 +39,7 @@ public class LeadEditFlowTest {
         model = mock(Model.class);
     }
 
+
     @Test
     void fullEditFlow_fromFormToRepositoryUpdate() {
         // Given: existing lead in repository

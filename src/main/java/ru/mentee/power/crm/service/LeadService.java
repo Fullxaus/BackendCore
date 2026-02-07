@@ -55,6 +55,18 @@ public class LeadService {
         return repository.findAll();
     }
 
+    /**
+     * Поиск лидов по тексту (имя/компания или email) и статусу через Stream API.
+     */
+    public List<Lead> findLeads(String search, String status) {
+        return repository.findAll().stream()
+                .filter(lead -> search == null || search.isBlank()
+                        || lead.company().toLowerCase().contains(search.toLowerCase())
+                        || lead.contact().email().toLowerCase().contains(search.toLowerCase()))
+                .filter(lead -> status == null || status.isBlank() || lead.status().equals(status))
+                .collect(Collectors.toList());
+    }
+
     public Optional<Lead> findById(UUID id) {
         // Делегирование вызова в repository
         return Optional.ofNullable(repository.findById(id));
@@ -72,6 +84,8 @@ public class LeadService {
                 .filter(lead -> lead.status().equals(status.name())) // Обратите внимание на .name()
                 .collect(Collectors.toList());
     }
+
+
 
     /**
      * Обновляет существующего лида по ID.

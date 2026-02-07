@@ -1,29 +1,52 @@
 @param java.util.List<ru.mentee.power.crm.model.Lead> leads
-@param ru.mentee.power.crm.model.LeadStatus currentFilter
+@param String search
+@param String status
+
+<form method="get" action="/leads" class="bg-white shadow rounded-lg p-4 mb-6">
+  <div class="flex flex-wrap items-end gap-4">
+    <div>
+      <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Поиск по имени/email</label>
+      <input type="text" id="search" name="search" value="${search != null ? search : ""}"
+             class="border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 min-w-[200px]"
+             placeholder="Имя или email">
+    </div>
+    <div>
+      <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Статус</label>
+      <select id="status" name="status" class="border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        @if(status == null || status.isEmpty())
+        <option value="" selected>Все статусы</option>
+        @else
+        <option value="">Все статусы</option>
+        @endif
+        @if(status != null && status.equals("NEW"))
+        <option value="NEW" selected>NEW</option>
+        @else
+        <option value="NEW">NEW</option>
+        @endif
+        @if(status != null && status.equals("CONTACTED"))
+        <option value="CONTACTED" selected>CONTACTED</option>
+        @else
+        <option value="CONTACTED">CONTACTED</option>
+        @endif
+        @if(status != null && status.equals("QUALIFIED"))
+        <option value="QUALIFIED" selected>QUALIFIED</option>
+        @else
+        <option value="QUALIFIED">QUALIFIED</option>
+        @endif
+      </select>
+    </div>
+    <div class="flex gap-2">
+      <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        Найти
+      </button>
+      <a href="/leads" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 inline-block">
+        Сбросить фильтры
+      </a>
+    </div>
+  </div>
+</form>
 
 
-<div class="mb-4 flex gap-2">
-  <a href="/leads"
-     class='px-4 py-2 rounded ${currentFilter == null ? "bg-blue-500 text-white" : "bg-gray-200"}'>
-    Все
-  </a>
-  <a href="/leads?status=NEW"
-     class='px-4 py-2 rounded ${currentFilter == ru.mentee.power.crm.model.LeadStatus.NEW ? "bg-blue-500 text-white" : "bg-gray-200"}'>
-    NEW
-  </a>
-  <a href="/leads?status=CONTACTED"
-     class='px-4 py-2 rounded ${currentFilter == ru.mentee.power.crm.model.LeadStatus.CONTACTED ? "bg-blue-500 text-white" : "bg-gray-200"}'>
-    CONTACTED
-  </a>
-  <a href="/leads?status=QUALIFIED"
-     class='px-4 py-2 rounded ${currentFilter == ru.mentee.power.crm.model.LeadStatus.QUALIFIED ? "bg-blue-500 text-white" : "bg-gray-200"}'>
-    QUALIFIED
-  </a>
-</div>
-
-@if(currentFilter != null)
-<p class="text-sm text-gray-600 mb-2">Показаны лиды со статусом: ${currentFilter}</p>
-@endif
 
 <div class="mb-4">
   <a href="/leads/new"
