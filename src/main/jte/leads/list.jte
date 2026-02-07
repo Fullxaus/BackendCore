@@ -1,7 +1,6 @@
 @param java.util.List<ru.mentee.power.crm.model.Lead> leads
 @param ru.mentee.power.crm.model.LeadStatus currentFilter
 
-
 <div class="mb-4 flex gap-2">
   <a href="/leads"
      class='px-4 py-2 rounded ${currentFilter == null ? "bg-blue-500 text-white" : "bg-gray-200"}'>

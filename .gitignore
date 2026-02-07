@@ -35,5 +35,9 @@ bin/
 ### VS Code ###
 .vscode/
 
+### One-time history rewrite helpers ###
+/scripts/
+jte-classes/
+
 ### Mac OS ###
 .DS_Store

@@ -92,6 +92,7 @@ public class LeadController {
         return "redirect:/leads";
     }
 
+
     @PostMapping("/leads/{id}/delete")
     public String deleteLead(@PathVariable UUID id) {
         leadService.delete(id);
