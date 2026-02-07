@@ -23,6 +23,7 @@ public class LeadService {
         this.repository = repository;
     }
 
+
     /**
      * Создаёт нового лида с проверкой уникальности email.
      *
