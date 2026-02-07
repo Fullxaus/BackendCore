@@ -46,6 +46,8 @@
   </div>
 </form>
 
+
+
 <div class="mb-4">
   <a href="/leads/new"
      class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
