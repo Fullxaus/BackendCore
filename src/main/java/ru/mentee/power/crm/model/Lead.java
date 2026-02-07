@@ -5,7 +5,6 @@ import ru.mentee.power.crm.domain.Contact;
 import java.util.Arrays;
 import java.util.UUID;
 
-
 public record Lead(
         UUID id,
         Contact contact,
