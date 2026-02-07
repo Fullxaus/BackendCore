@@ -1,6 +1,8 @@
 package ru.mentee.power.crm.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
@@ -86,6 +88,16 @@ public class LeadService {
         Lead updated = new Lead(id, contact, company, status.name());
         repository.save(updated);
         return updated;
+    }
+
+    /**
+     * Удаляет лида по ID. Если лид не найден — выбрасывает ResponseStatusException(404).
+     */
+    public void delete(UUID id) {
+        if (repository.findById(id) == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found");
+        }
+        repository.delete(id);
     }
 }
 

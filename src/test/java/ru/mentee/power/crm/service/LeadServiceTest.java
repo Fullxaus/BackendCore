@@ -177,11 +177,35 @@ public class LeadServiceTest {
     @Test
     void shouldThrow_whenUpdatingNonexistentLead() {
         UUID nonexistentId = UUID.randomUUID();
-        Address address = new Address("City", "Street", "12345");
 
         assertThatThrownBy(() ->
                 service.update(nonexistentId, "x@x.com", "+7", "Co", LeadStatus.NEW))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Lead not found");
+    }
+
+    @Test
+    void shouldDeleteLead_whenExists() {
+        Address address = new Address("City", "Street", "12345");
+        Lead created = service.addLead("delete@example.com", "ToDeleteCo", LeadStatus.NEW, address, "+7999");
+        UUID id = created.id();
+        assertThat(service.findById(id)).isPresent();
+
+        service.delete(id);
+
+        assertThat(service.findById(id)).isEmpty();
+    }
+
+    @Test
+    void shouldThrow404_whenDeletingNonexistentLead() {
+        UUID nonexistentId = UUID.randomUUID();
+
+        assertThatThrownBy(() -> service.delete(nonexistentId))
+                .isInstanceOf(org.springframework.web.server.ResponseStatusException.class)
+                .satisfies(ex -> {
+                    org.springframework.web.server.ResponseStatusException rse =
+                            (org.springframework.web.server.ResponseStatusException) ex;
+                    assertThat(rse.getStatusCode()).isEqualTo(org.springframework.http.HttpStatus.NOT_FOUND);
+                });
     }
 }
