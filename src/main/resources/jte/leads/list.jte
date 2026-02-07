@@ -21,8 +21,6 @@
   </a>
 </div>
 
-
-
 @if(currentFilter != null)
 <p class="text-sm text-gray-600 mb-2">Показаны лиды со статусом: ${currentFilter}</p>
 @endif

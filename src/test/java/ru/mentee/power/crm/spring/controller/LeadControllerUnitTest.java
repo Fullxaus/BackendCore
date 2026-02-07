@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class LeadControllerUnitTest {
 
-
     @Mock
     private LeadService mockLeadService;
 
@@ -141,6 +140,7 @@ public class LeadControllerUnitTest {
         verify(mockLeadService).delete(id);
         assertThat(viewName).isEqualTo("redirect:/leads");
     }
+
 
     @Test
     void deleteLead_shouldThrow404_whenLeadNotFound() {
