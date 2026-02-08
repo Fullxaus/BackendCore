@@ -6,8 +6,11 @@ import org.springframework.ui.Model;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
+import ru.mentee.power.crm.model.LeadForm;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.repository.LeadRepository;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 import ru.mentee.power.crm.service.LeadService;
 
 import java.util.Optional;
@@ -54,13 +57,14 @@ public class LeadEditFlowTest {
         String formView = controller.showEditForm(id, model);
 
         // Then: form is displayed with lead data
-        assertThat(formView).isEqualTo("edit");
-        verify(model).addAttribute(eq("lead"), any(Lead.class));
+        assertThat(formView).isEqualTo("leads/form");
+        verify(model).addAttribute(eq("lead"), any(LeadForm.class));
         verify(model).addAttribute("statuses", LeadStatus.values());
 
         // When: 2. Submit updated data (POST /leads/{id})
-        String redirect = controller.updateLead(
-                id, "updated@test.com", "+7111", "UpdatedCo", LeadStatus.CONTACTED);
+        LeadForm form = new LeadForm("UpdatedCo", "updated@test.com", "+7111", LeadStatus.CONTACTED);
+        BindingResult result = new BeanPropertyBindingResult(form, "lead");
+        String redirect = controller.updateLead(id, form, result, model);
 
         // Then: redirect to /leads (Post-Redirect-Get pattern)
         assertThat(redirect).isEqualTo("redirect:/leads");
@@ -84,7 +88,7 @@ public class LeadEditFlowTest {
 
         controller.showEditForm(lead.id(), model);
 
-        verify(model).addAttribute("lead", lead);
+        verify(model).addAttribute(eq("lead"), any(LeadForm.class));
     }
 
     @Test
