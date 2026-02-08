@@ -79,6 +79,9 @@
                     </td>
                     <td class="px-4 py-2">
                         <a href="/leads/${lead.id().toString()}/edit" class="text-blue-600 hover:underline">Редактировать</a>
+                        @if(lead.status().equals("QUALIFIED"))
+                        <a href="/deals/convert/${lead.id().toString()}" class="text-green-600 hover:underline ml-2">→ Сделка</a>
+                        @endif
                         <form action="/leads/${lead.id().toString()}/delete" method="post" class="inline ml-2">
                             <button type="submit" class="px-2 py-1 rounded text-sm" style="background-color: #dc2626; color: white;" onmouseover="this.style.backgroundColor='#b91c1c'" onmouseout="this.style.backgroundColor='#dc2626'" onclick="return confirm('Удалить лида?')">Удалить</button>
                         </form>

@@ -4,8 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import ru.mentee.power.crm.domain.Address;
+import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.spring.repository.DealRepository;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -13,12 +18,18 @@ import static org.mockito.Mockito.*;
 public class DataInitializerTest {
 
     private LeadService leadService;
+    private ru.mentee.power.crm.repository.LeadRepository coreLeadRepository;
+    private DealRepository dealRepository;
     private DataInitializer dataInitializer;
 
     @BeforeEach
     void setUp() {
         leadService = mock(LeadService.class);
-        dataInitializer = new DataInitializer(leadService);
+        coreLeadRepository = mock(ru.mentee.power.crm.repository.LeadRepository.class);
+        dealRepository = mock(DealRepository.class);
+        when(leadService.findAll()).thenReturn(Collections.emptyList());
+        dataInitializer = new DataInitializer(leadService, coreLeadRepository,
+                mock(ru.mentee.power.crm.spring.service.DealService.class), dealRepository);
     }
 
     @Test
