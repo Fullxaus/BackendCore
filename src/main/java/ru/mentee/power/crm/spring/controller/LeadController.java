@@ -1,12 +1,15 @@
 package ru.mentee.power.crm.spring.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.Lead;
+import ru.mentee.power.crm.model.LeadForm;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
 
@@ -23,19 +26,28 @@ public class LeadController {
         this.leadService = leadService;
     }
 
-    @GetMapping("/leads/new")//получение данных
+    @GetMapping("/leads/new")
     public String showCreateForm(Model model) {
+        model.addAttribute("lead", new LeadForm());
         model.addAttribute("statuses", LeadStatus.values());
-        return "leads/create";
+        model.addAttribute("leadId", null);
+        model.addAttribute("errors", null);
+        return "leads/form";
     }
 
-    @PostMapping("/leads")//отправка данных на сервер
+    @PostMapping("/leads")
     public String createLead(
-            @RequestParam String email,
-            @RequestParam String company,
-            @RequestParam LeadStatus status) {
+            @ModelAttribute("lead") @Valid LeadForm lead,
+            BindingResult result,
+            Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("statuses", LeadStatus.values());
+            model.addAttribute("leadId", null);
+            model.addAttribute("errors", result);
+            return "leads/form";
+        }
         Address address = new Address("-", "-", "-");
-        leadService.addLead(email, company, status, address, "-");
+        leadService.addLead(lead.email(), lead.name(), lead.status(), address, lead.phone());
         return "redirect:/leads";
     }
 
@@ -70,21 +82,34 @@ public class LeadController {
         Optional<Lead> optionalLead = leadService.findById(id);
         Lead lead = optionalLead.orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"));
-        model.addAttribute("lead", lead);
+        LeadStatus status = parseLeadStatus(lead.status());
+        LeadForm form = new LeadForm(
+                lead.company(),
+                lead.contact().email(),
+                lead.contact().phone(),
+                status
+        );
+        model.addAttribute("lead", form);
+        model.addAttribute("leadId", id);
         model.addAttribute("statuses", LeadStatus.values());
-        return "edit";
+        model.addAttribute("errors", null);
+        return "leads/form";
     }
-
 
     @PostMapping("/leads/{id}")
     public String updateLead(
             @PathVariable UUID id,
-            @RequestParam String email,
-            @RequestParam(required = false) String phone,
-            @RequestParam String company,
-            @RequestParam LeadStatus status) {
-        String safePhone = (phone == null || phone.isBlank()) ? "-" : phone;
-        leadService.update(id, email, safePhone, company, status);
+            @ModelAttribute("lead") @Valid LeadForm lead,
+            BindingResult result,
+            Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("leadId", id);
+            model.addAttribute("statuses", LeadStatus.values());
+            model.addAttribute("errors", result);
+            return "leads/form";
+        }
+        String safePhone = (lead.phone() == null || lead.phone().isBlank()) ? "-" : lead.phone();
+        leadService.update(id, lead.email(), safePhone, lead.name(), lead.status());
         return "redirect:/leads";
     }
 
@@ -94,5 +119,16 @@ public class LeadController {
     public String deleteLead(@PathVariable UUID id) {
         leadService.delete(id);
         return "redirect:/leads";
+    }
+
+    private static LeadStatus parseLeadStatus(String value) {
+        if (value == null || value.isBlank()) {
+            return LeadStatus.NEW;
+        }
+        try {
+            return LeadStatus.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            return LeadStatus.NEW;
+        }
     }
 }
