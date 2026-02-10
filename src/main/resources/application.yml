@@ -12,6 +12,7 @@ server:
 spring:
   application:
     name: mentee-power-crm
+  # Datasource and JPA are in application-dev.yml (PostgreSQL) and application-test.yml (H2)
 
 gg:
   jte:

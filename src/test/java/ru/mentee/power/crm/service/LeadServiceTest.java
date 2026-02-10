@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
+import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import ru.mentee.power.crm.repository.LeadRepository;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class LeadServiceTest {
 
     @BeforeEach
     void setUp() {
-        repository = new LeadRepository();
+        repository = new InMemoryLeadRepository();
         service = new LeadService(repository);
     }
 
@@ -124,7 +125,7 @@ public class LeadServiceTest {
     @Test
     void shouldReturnOnlyNewLeads_whenFindByStatusNew() {
         // Given
-        LeadRepository repository = new LeadRepository();
+        LeadRepository repository = new InMemoryLeadRepository();
         LeadService leadService = new LeadService(repository);
 
         leadService.addLead("test1@example.com", "Company1", LeadStatus.NEW, new Address("Moscow", "Suvorova", "123456"), "1234567890");
@@ -142,7 +143,7 @@ public class LeadServiceTest {
     @Test
     void shouldReturnEmptyList_whenNoLeadsWithStatus() {
         // Given
-        LeadRepository repository = new LeadRepository();
+        LeadRepository repository = new InMemoryLeadRepository();
         LeadService leadService = new LeadService(repository);
 
         // When
