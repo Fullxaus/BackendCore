@@ -27,7 +27,7 @@ class DealServiceTest {
 
     @BeforeEach
     void setUp() {
-        coreLeadRepository = new ru.mentee.power.crm.repository.LeadRepository();
+        coreLeadRepository = new ru.mentee.power.crm.repository.InMemoryLeadRepository();
         dealRepository = new InMemoryDealRepository();
         var leadRepository = new LeadRepositoryAdapter(coreLeadRepository);
         dealService = new DealService(dealRepository, leadRepository);

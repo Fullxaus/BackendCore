@@ -1,38 +1,24 @@
 package ru.mentee.power.crm.repository;
 
-import org.springframework.stereotype.Component;
 import ru.mentee.power.crm.model.Lead;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+public interface LeadRepository {
 
-@Component
-public class LeadRepository   {
-    private final Map<UUID, Lead> storage = new HashMap<>();
+    void save(Lead lead);
 
-    public void save(Lead lead) {
-        storage.put(lead.id(), lead);
-    }
+    Lead findById(UUID id);
 
-    public Lead findById(UUID id) {
-        return storage.get(id);
-    }
+    List<Lead> findAll();
 
-    public List<Lead> findAll() {
-        return new ArrayList<>(storage.values());
-    }
+    void delete(UUID id);
 
-    public void delete(UUID id) {
-        storage.remove(id);
-    }
+    Optional<Lead> findByEmail(String email);
 
-    public int size() {
-        return storage.size();
-    }
-
-    public Optional<Lead> findByEmail(String email) {
-        return storage.values().stream()
-                .filter(lead -> lead.contact().email().equals(email))
-                .findFirst();
+    default int size() {
+        return findAll().size();
     }
 }

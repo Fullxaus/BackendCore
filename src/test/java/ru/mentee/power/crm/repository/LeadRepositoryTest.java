@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
+import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class LeadRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        repository = new LeadRepository();
+        repository = new InMemoryLeadRepository();
     }
 
     @Test

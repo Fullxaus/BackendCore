@@ -5,6 +5,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.LeadStatus;
+import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import ru.mentee.power.crm.repository.LeadRepository;
 import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.servlet.LeadListServlet;
@@ -15,7 +16,7 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        LeadRepository repository = new LeadRepository();
+        LeadRepository repository = new InMemoryLeadRepository();
         LeadService leadService = new LeadService(repository);
 
         leadService.addLead("test1@example.com", "Company1", LeadStatus.NEW, new Address("Moscow", "Suvorova", "123456"), "1234567890");

@@ -1,35 +1,32 @@
 package ru.mentee.power.crm.repository;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 import ru.mentee.power.crm.model.Lead;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
-public class InMemoryLeadRepository implements Repository<Lead> {
+@Repository
+@Profile("!dev")
+public class InMemoryLeadRepository implements LeadRepository {
 
     private final Map<UUID, Lead> storage = new HashMap<>();
     private final Map<String, UUID> emailIndex = new HashMap<>();
 
     @Override
-    public void add(Lead entity) {
-
-    }
-
-
-    @Override
-    public void remove(UUID id) {
-
-    }
-
-    @Override
-    public Lead save(Lead lead) {
+    public void save(Lead lead) {
         storage.put(lead.id(), lead);
         emailIndex.put(lead.contact().email(), lead.id());
-        return lead;
     }
 
     @Override
-    public Optional<Lead> findById(UUID id) {
-        return Optional.ofNullable(storage.get(id));
+    public Lead findById(UUID id) {
+        return storage.get(id);
     }
 
     @Override
@@ -54,4 +51,3 @@ public class InMemoryLeadRepository implements Repository<Lead> {
         return Optional.ofNullable(storage.get(id));
     }
 }
-

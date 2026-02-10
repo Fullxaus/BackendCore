@@ -36,11 +36,11 @@ public class InMemoryLeadRepositoryTest {
         repository.save(lead);
 
         // When
-        Optional<Lead> result = repository.findById(lead.id());
+        Lead result = repository.findById(lead.id());
 
         // Then
-        assertThat(result).isPresent();
-        assertThat(result.get().id()).isEqualTo(lead.id());
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isEqualTo(lead.id());
     }
 
     @Test
@@ -49,10 +49,10 @@ public class InMemoryLeadRepositoryTest {
         InMemoryLeadRepository repository = new InMemoryLeadRepository();
 
         // When
-        Optional<Lead> result = repository.findById(UUID.randomUUID());
+        Lead result = repository.findById(UUID.randomUUID());
 
         // Then
-        assertThat(result).isEmpty();
+        assertThat(result).isNull();
     }
 
     @Test

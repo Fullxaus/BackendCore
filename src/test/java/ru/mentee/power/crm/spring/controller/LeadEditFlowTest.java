@@ -8,6 +8,7 @@ import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadForm;
 import ru.mentee.power.crm.model.LeadStatus;
+import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import ru.mentee.power.crm.repository.LeadRepository;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -36,7 +37,7 @@ public class LeadEditFlowTest {
 
     @BeforeEach
     void setUp() {
-        repository = new LeadRepository();
+        repository = new InMemoryLeadRepository();
         leadService = new LeadService(repository);
         controller = new LeadController(leadService);
         model = mock(Model.class);
