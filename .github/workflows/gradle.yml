@@ -29,15 +29,19 @@ jobs:
       - name: Prepare Gradle wrapper
         run: chmod +x gradlew
 
-      # 4. (Опционально) Сборка без тестов
+      # 4. Очистка кэша Gradle
+      - name: Clean Gradle cache
+        run: ./gradlew clean --no-daemon
+
+      # 5. (Опционально) Сборка без тестов
       - name: Build without tests
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean build -x test --no-daemon
 
-      # 5. Запускаем тесты с генерацией отчёта JaCoCo
+      # 6. Запускаем тесты с генерацией отчёта JaCoCo
       - name: Run tests with JaCoCo
-        run: ./gradlew test jacocoTestReport
+        run: ./gradlew test jacocoTestReport --no-daemon
 
-      # 6. Загружаем HTML-отчёт JaCoCo как артефакт
+      # 7. Загружаем HTML-отчёт JaCoCo как артефакт
       - name: Upload JaCoCo coverage report
         uses: actions/upload-artifact@v4
         with:
@@ -45,6 +49,6 @@ jobs:
           path: build/reports/jacoco/test/html
           retention-days: 7
 
-      # 7. Финальная полная сборка (если требуется)
+      # 8. Финальная полная сборка (если требуется)
       - name: Clean and full build
-        run: ./gradlew clean build
+        run: ./gradlew clean build --no-daemon
