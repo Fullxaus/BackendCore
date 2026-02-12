@@ -70,16 +70,16 @@
         <tbody>
             @for(var lead : leads)
                 <tr class="border-t hover:bg-gray-50">
-                    <td class="px-4 py-2">${lead.contact().email()}</td>
-                    <td class="px-4 py-2">${lead.company()}</td>
+                    <td class="px-4 py-2">${lead.contact() != null && lead.contact().email() != null ? lead.contact().email() : "N/A"}</td>
+                    <td class="px-4 py-2">${lead.company() != null ? lead.company() : "N/A"}</td>
                     <td class="px-4 py-2">
                         <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-800">
-                            ${lead.status()}
+                            ${lead.status() != null ? lead.status() : "N/A"}
                         </span>
                     </td>
                     <td class="px-4 py-2">
                         <a href="/leads/${lead.id().toString()}/edit" class="text-blue-600 hover:underline">Редактировать</a>
-                        @if(lead.status().equals("QUALIFIED"))
+                        @if(lead.status() != null && lead.status().equals("QUALIFIED"))
                         <a href="/deals/convert/${lead.id().toString()}" class="text-green-600 hover:underline ml-2">→ Сделка</a>
                         @endif
                         <form action="/leads/${lead.id().toString()}/delete" method="post" class="inline ml-2">

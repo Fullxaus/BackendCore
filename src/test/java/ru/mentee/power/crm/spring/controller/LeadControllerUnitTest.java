@@ -7,13 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.server.ResponseStatusException;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
-import ru.mentee.power.crm.model.LeadForm;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.spring.MockLeadService;
@@ -89,9 +86,8 @@ public class LeadControllerUnitTest {
     void shouldReturnCreateFormView() {
         String viewName = controller.showCreateForm(model);
 
-        verify(model).addAttribute(eq("lead"), any(LeadForm.class));
         verify(model).addAttribute("statuses", LeadStatus.values());
-        assertThat(viewName).isEqualTo("leads/form");
+        assertThat(viewName).isEqualTo("leads/create");
     }
 
     @Test
@@ -105,10 +101,9 @@ public class LeadControllerUnitTest {
         String viewName = controller.showEditForm(id, model);
 
         verify(mockLeadService).findById(id);
-        verify(model).addAttribute(eq("lead"), any(LeadForm.class));
-        verify(model).addAttribute("leadId", id);
+        verify(model).addAttribute(eq("lead"), any(Lead.class));
         verify(model).addAttribute("statuses", LeadStatus.values());
-        assertThat(viewName).isEqualTo("leads/form");
+        assertThat(viewName).isEqualTo("spring/edit");
     }
 
     @Test
@@ -128,13 +123,11 @@ public class LeadControllerUnitTest {
     @Test
     void updateLead_shouldCallServiceAndRedirect() {
         UUID id = UUID.randomUUID();
-        LeadForm form = new LeadForm("NewCo", "new@example.com", "+7999", LeadStatus.CONTACTED);
-        BindingResult result = new BeanPropertyBindingResult(form, "lead");
         when(mockLeadService.update(eq(id), eq("new@example.com"), eq("+7999"), eq("NewCo"), eq(LeadStatus.CONTACTED)))
                 .thenReturn(new Lead(id, new Contact("new@example.com", "+7999",
                         new Address("City", "Street", "12345")), "NewCo", LeadStatus.CONTACTED.name()));
 
-        String viewName = controller.updateLead(id, form, result, model);
+        String viewName = controller.updateLead(id, "new@example.com", "+7999", "NewCo", LeadStatus.CONTACTED);
 
         verify(mockLeadService).update(id, "new@example.com", "+7999", "NewCo", LeadStatus.CONTACTED);
         assertThat(viewName).isEqualTo("redirect:/leads");
@@ -167,43 +160,13 @@ public class LeadControllerUnitTest {
                 });
     }
 
-    // --- Валидация формы создания лида ---
-
-    @Test
-    void postLeads_withEmptyName_returnsFormWithFieldError() {
-        LeadForm lead = new LeadForm("", "test@test.com", "+79991234567", LeadStatus.NEW);
-        BindingResult result = new BeanPropertyBindingResult(lead, "lead");
-        result.rejectValue("name", "NotBlank", "Имя обязательно");
-
-        String viewName = controller.createLead(lead, result, model);
-
-        assertThat(viewName).isEqualTo("leads/form");
-        assertThat(result.hasFieldErrors("name")).isTrue();
-        verify(model).addAttribute("statuses", LeadStatus.values());
-        verify(model).addAttribute("errors", result);
-    }
-
-    @Test
-    void postLeads_withInvalidEmail_returnsFormWithEmailError() {
-        LeadForm lead = new LeadForm("Иван", "invalidemail", "+79991234567", LeadStatus.NEW);
-        BindingResult result = new BeanPropertyBindingResult(lead, "lead");
-        result.rejectValue("email", "Email", "Некорректный формат email");
-
-        String viewName = controller.createLead(lead, result, model);
-
-        assertThat(viewName).isEqualTo("leads/form");
-        assertThat(result.hasFieldErrors("email")).isTrue();
-        assertThat(result.getFieldError("email").getCode()).isEqualTo("Email");
-    }
+    // --- Создание лида ---
 
     @Test
     void postLeads_withValidData_redirectsToLeads() {
-        LeadForm lead = new LeadForm("Иван", "valid@test.com", "+79991234567", LeadStatus.NEW);
-        BindingResult result = new BeanPropertyBindingResult(lead, "lead");
-
-        String viewName = controller.createLead(lead, result, model);
+        String viewName = controller.createLead("valid@test.com", "Иван", LeadStatus.NEW);
 
         assertThat(viewName).isEqualTo("redirect:/leads");
-        verify(mockLeadService).addLead(eq("valid@test.com"), eq("Иван"), eq(LeadStatus.NEW), any(Address.class), eq("+79991234567"));
+        verify(mockLeadService).addLead(eq("valid@test.com"), eq("Иван"), eq(LeadStatus.NEW), any(Address.class), eq("-"));
     }
 }

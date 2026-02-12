@@ -4,13 +4,20 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "deals")
+@Getter
+@Setter
+@NoArgsConstructor
 public class DealEntity {
 
     @Id
@@ -28,46 +35,20 @@ public class DealEntity {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    public DealEntity() {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DealEntity that = (DealEntity) o;
+        // Для JPA entity сравниваем только по ID
+        // Если ID null - объекты не равны (новые объекты считаются разными)
+        return id != null && Objects.equals(id, that.id);
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getLeadId() {
-        return leadId;
-    }
-
-    public void setLeadId(UUID leadId) {
-        this.leadId = leadId;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    @Override
+    public int hashCode() {
+        // Для JPA entity hashCode только по ID
+        // Если ID null - используем System.identityHashCode для новых объектов
+        return id != null ? Objects.hash(id) : System.identityHashCode(this);
     }
 }
