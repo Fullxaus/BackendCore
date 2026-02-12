@@ -61,7 +61,7 @@ public class DataInitializerTest {
         assertEquals("Moscow", addr1.city());
         assertEquals("Suvorova", addr1.street());
         assertEquals("123456", addr1.zip());
-        assertEquals("1234567890", phoneCaptor.getAllValues().get(0));
+        assertEquals("+71234567890", phoneCaptor.getAllValues().get(0));
 
         assertEquals("test2@example.com", emailCaptor.getAllValues().get(1));
         assertEquals("Company2", companyCaptor.getAllValues().get(1));
@@ -69,7 +69,7 @@ public class DataInitializerTest {
         assertEquals("St.Petersburg", addr2.city());
         assertEquals("Pushkinskaya", addr2.street());
         assertEquals("987654", addr2.zip());
-        assertEquals("9876543210", phoneCaptor.getAllValues().get(1));
+        assertEquals("+79876543210", phoneCaptor.getAllValues().get(1));
 
         assertEquals("test3@example.com", emailCaptor.getAllValues().get(2));
         assertEquals("Company3", companyCaptor.getAllValues().get(2));
@@ -77,7 +77,7 @@ public class DataInitializerTest {
         assertEquals("Kazan", addr3.city());
         assertEquals("Kazanskaya", addr3.street());
         assertEquals("111111", addr3.zip());
-        assertEquals("1111111111", phoneCaptor.getAllValues().get(2));
+        assertEquals("+71111111111", phoneCaptor.getAllValues().get(2));
 
         assertEquals("test4@example.com", emailCaptor.getAllValues().get(3));
         assertEquals("Company4", companyCaptor.getAllValues().get(3));
@@ -85,7 +85,7 @@ public class DataInitializerTest {
         assertEquals("Novosibirsk", addr4.city());
         assertEquals("Novosibirskaya", addr4.street());
         assertEquals("222222", addr4.zip());
-        assertEquals("2222222222", phoneCaptor.getAllValues().get(3));
+        assertEquals("+72222222222", phoneCaptor.getAllValues().get(3));
 
         assertEquals("test5@example.com", emailCaptor.getAllValues().get(4));
         assertEquals("Company5", companyCaptor.getAllValues().get(4));
@@ -93,6 +93,6 @@ public class DataInitializerTest {
         assertEquals("Ekaterinburg", addr5.city());
         assertEquals("Lermontova", addr5.street());
         assertEquals("333333", addr5.zip());
-        assertEquals("3333333333", phoneCaptor.getAllValues().get(4));
+        assertEquals("+73333333333", phoneCaptor.getAllValues().get(4));
     }
 }
