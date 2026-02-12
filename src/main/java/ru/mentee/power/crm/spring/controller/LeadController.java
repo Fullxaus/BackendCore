@@ -1,15 +1,14 @@
 package ru.mentee.power.crm.spring.controller;
 
-import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.Lead;
-import ru.mentee.power.crm.model.LeadForm;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
 
@@ -20,6 +19,7 @@ import java.util.UUID;
 
 @Controller
 public class LeadController {
+    private static final Logger log = LoggerFactory.getLogger(LeadController.class);
     private final LeadService leadService;
 
     public LeadController(LeadService leadService) {
@@ -28,26 +28,17 @@ public class LeadController {
 
     @GetMapping("/leads/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("lead", new LeadForm());
         model.addAttribute("statuses", LeadStatus.values());
-        model.addAttribute("leadId", null);
-        model.addAttribute("errors", null);
-        return "leads/form";
+        return "leads/create";
     }
 
     @PostMapping("/leads")
     public String createLead(
-            @ModelAttribute("lead") @Valid LeadForm lead,
-            BindingResult result,
-            Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("statuses", LeadStatus.values());
-            model.addAttribute("leadId", null);
-            model.addAttribute("errors", result);
-            return "leads/form";
-        }
+            @RequestParam String email,
+            @RequestParam String company,
+            @RequestParam LeadStatus status) {
         Address address = new Address("-", "-", "-");
-        leadService.addLead(lead.email(), lead.name(), lead.status(), address, lead.phone());
+        leadService.addLead(email, company, status, address, "-");
         return "redirect:/leads";
     }
 
@@ -82,34 +73,20 @@ public class LeadController {
         Optional<Lead> optionalLead = leadService.findById(id);
         Lead lead = optionalLead.orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"));
-        LeadStatus status = parseLeadStatus(lead.status());
-        LeadForm form = new LeadForm(
-                lead.company(),
-                lead.contact().email(),
-                lead.contact().phone(),
-                status
-        );
-        model.addAttribute("lead", form);
-        model.addAttribute("leadId", id);
+        model.addAttribute("lead", lead);
         model.addAttribute("statuses", LeadStatus.values());
-        model.addAttribute("errors", null);
-        return "leads/form";
+        return "spring/edit";
     }
 
     @PostMapping("/leads/{id}")
     public String updateLead(
             @PathVariable UUID id,
-            @ModelAttribute("lead") @Valid LeadForm lead,
-            BindingResult result,
-            Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("leadId", id);
-            model.addAttribute("statuses", LeadStatus.values());
-            model.addAttribute("errors", result);
-            return "leads/form";
-        }
-        String safePhone = (lead.phone() == null || lead.phone().isBlank()) ? "-" : lead.phone();
-        leadService.update(id, lead.email(), safePhone, lead.name(), lead.status());
+            @RequestParam String email,
+            @RequestParam(required = false) String phone,
+            @RequestParam String company,
+            @RequestParam LeadStatus status) {
+        String safePhone = (phone == null || phone.isBlank()) ? "-" : phone;
+        leadService.update(id, email, safePhone, company, status);
         return "redirect:/leads";
     }
 

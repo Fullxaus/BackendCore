@@ -13,6 +13,8 @@ spring:
   application:
     name: mentee-power-crm
   # Datasource and JPA are in application-dev.yml (PostgreSQL) and application-test.yml (H2)
+  # Для запуска с PostgreSQL используйте: --spring.profiles.active=dev
+  # Для запуска без профиля будет использоваться InMemoryLeadRepository
 
 gg:
   jte:

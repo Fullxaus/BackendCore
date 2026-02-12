@@ -18,10 +18,10 @@
   </div>
   @endif
 
-  <form action="${leadId != null ? '/leads/' + leadId.toString() : '/leads'}" method="post" class="space-y-4">
+  <form action="@if(leadId != null)/leads/${leadId.toString()}@else/leads@endif" method="post" class="space-y-4">
     <div class="mb-4">
       <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Имя</label>
-      <input type="text" id="name" name="name" value="${lead.name()}"
+      <input type="text" id="name" name="name" value="${lead.name() != null ? lead.name() : ""}"
              class="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${errors != null && errors.hasFieldErrors("name") ? 'border-red-500' : 'border-gray-300'}"
              placeholder="Имя" />
       @if(errors != null && errors.hasFieldErrors("name"))
@@ -31,7 +31,7 @@
 
     <div class="mb-4">
       <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-      <input type="email" id="email" name="email" value="${lead.email()}"
+      <input type="email" id="email" name="email" value="${lead.email() != null ? lead.email() : ""}"
              class="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${errors != null && errors.hasFieldErrors("email") ? 'border-red-500' : 'border-gray-300'}"
              placeholder="test@example.com" />
       @if(errors != null && errors.hasFieldErrors("email"))
@@ -41,7 +41,7 @@
 
     <div class="mb-4">
       <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
-      <input type="tel" id="phone" name="phone" value="${lead.phone()}"
+      <input type="tel" id="phone" name="phone" value="${lead.phone() != null ? lead.phone() : ""}"
              class="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${errors != null && errors.hasFieldErrors("phone") ? 'border-red-500' : 'border-gray-300'}"
              placeholder="+7 999 123-45-67" />
       @if(errors != null && errors.hasFieldErrors("phone"))
@@ -54,7 +54,7 @@
       <select id="status" name="status"
               class="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${errors != null && errors.hasFieldErrors("status") ? 'border-red-500' : 'border-gray-300'}">
         @for(var s : statuses)
-        @if(lead.status() != null && lead.status().name().equals(s.name()))
+        @if(lead.status() != null && lead.status().equals(s))
         <option value="${s.name()}" selected>${s.name()} — ${s.getDescription()}</option>
         @else
         <option value="${s.name()}">${s.name()} — ${s.getDescription()}</option>
