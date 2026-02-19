@@ -7,7 +7,9 @@ import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import ru.mentee.power.crm.repository.LeadRepository;
+import ru.mentee.power.crm.repository.MemoryRepositoryLeadStatus;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.service.LeadStatusService;
 import ru.mentee.power.crm.servlet.LeadListServlet;
 
 import java.io.File;
@@ -18,6 +20,10 @@ public class Main {
 
         LeadRepository repository = new InMemoryLeadRepository();
         LeadService leadService = new LeadService(repository);
+
+        MemoryRepositoryLeadStatus statusRepository = new MemoryRepositoryLeadStatus();
+        LeadStatusService leadStatusService = new LeadStatusService(statusRepository);
+        leadStatusService.ensureStatusesInitialized();
 
         leadService.addLead("test1@example.com", "Company1", LeadStatus.NEW, new Address("Moscow", "Suvorova", "123456"), "1234567890");
         leadService.addLead("test2@example.com", "Company2", LeadStatus.NEW, new Address("St.Petersburg", "Pushkinskaya", "987654"), "9876543210");
@@ -35,8 +41,9 @@ public class Main {
         Context context = tomcat.addContext("", new File(".").getAbsolutePath());
 
         context.getServletContext().setAttribute("leadService", leadService);
+        context.getServletContext().setAttribute("leadStatusService", leadStatusService);
 
-        tomcat.addServlet(context, "LeadListServlet", new LeadListServlet());
+        Tomcat.addServlet(context, "LeadListServlet", new LeadListServlet());
         context.addServletMappingDecoded("/leads", "LeadListServlet");
 
         tomcat.start();

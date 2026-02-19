@@ -8,23 +8,23 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Setter;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.service.LeadService;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
+@Setter
 public class LeadListServlet extends HttpServlet {
 
 
     private TemplateEngine templateEngine;
-
-    public void setTemplateEngine(TemplateEngine templateEngine) {
-        this.templateEngine = templateEngine;
-    }
 
     @Override
     public void init() throws ServletException {
@@ -49,14 +49,22 @@ public class LeadListServlet extends HttpServlet {
         }
 
         try {
-            List<Lead> leads = leadService.findAll();
+            String search = request.getParameter("search");
+            String status = request.getParameter("status");
+            List<Lead> leads = (search != null && !search.isBlank()) || (status != null && !status.isBlank())
+                    ? leadService.findLeads(search != null ? search : "", status != null ? status : "")
+                    : leadService.findAll();
 
             response.setContentType("text/html; charset=UTF-8");
             Writer writer = response.getWriter();
 
-            // Render template with named parameter "leads"
+            Map<String, Object> params = new HashMap<>();
+            params.put("leads", leads);
+            params.put("search", search != null ? search : "");
+            params.put("status", status != null ? status : "");
+
             StringOutput out = new StringOutput();
-            templateEngine.render("leads/list.jte", leads, out);
+            templateEngine.render("leads/list.jte", params, out);
             writer.write(out.toString());
 
         } catch (Exception e) {
