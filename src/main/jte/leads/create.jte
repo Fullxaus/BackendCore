@@ -1,4 +1,4 @@
-@param ru.mentee.power.crm.model.LeadStatus[] statuses
+@param java.util.List<ru.mentee.power.crm.model.LeadStatus> statuses
 
 
 <div class="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
