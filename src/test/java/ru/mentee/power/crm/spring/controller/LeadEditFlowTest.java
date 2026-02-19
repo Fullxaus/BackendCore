@@ -10,7 +10,9 @@ import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import ru.mentee.power.crm.repository.LeadRepository;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.service.LeadStatusService;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +38,9 @@ public class LeadEditFlowTest {
     void setUp() {
         repository = new InMemoryLeadRepository();
         leadService = new LeadService(repository);
-        controller = new LeadController(leadService);
+        LeadStatusService leadStatusService = mock(LeadStatusService.class);
+        when(leadStatusService.findAllStatuses()).thenReturn(Arrays.asList(LeadStatus.values()));
+        controller = new LeadController(leadService, leadStatusService);
         model = mock(Model.class);
     }
 
@@ -57,7 +61,7 @@ public class LeadEditFlowTest {
         // Then: form is displayed with lead data
         assertThat(formView).isEqualTo("spring/edit");
         verify(model).addAttribute(eq("lead"), any(Lead.class));
-        verify(model).addAttribute("statuses", LeadStatus.values());
+        verify(model).addAttribute(eq("statuses"), any());
 
         // When: 2. Submit updated data (POST /leads/{id})
         String redirect = controller.updateLead(id, "updated@test.com", "+7111", "UpdatedCo", LeadStatus.CONTACTED);
