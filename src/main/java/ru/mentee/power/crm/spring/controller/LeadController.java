@@ -11,6 +11,7 @@ import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.service.LeadStatusService;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,14 +22,16 @@ import java.util.UUID;
 public class LeadController {
     private static final Logger log = LoggerFactory.getLogger(LeadController.class);
     private final LeadService leadService;
+    private final LeadStatusService leadStatusService;
 
-    public LeadController(LeadService leadService) {
+    public LeadController(LeadService leadService, LeadStatusService leadStatusService) {
         this.leadService = leadService;
+        this.leadStatusService = leadStatusService;
     }
 
     @GetMapping("/leads/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("statuses", LeadStatus.values());
+        model.addAttribute("statuses", leadStatusService.findAllStatuses());
         return "leads/create";
     }
 
@@ -74,7 +77,7 @@ public class LeadController {
         Lead lead = optionalLead.orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"));
         model.addAttribute("lead", lead);
-        model.addAttribute("statuses", LeadStatus.values());
+        model.addAttribute("statuses", leadStatusService.findAllStatuses());
         return "spring/edit";
     }
 
