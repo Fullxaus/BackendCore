@@ -2,7 +2,6 @@ package ru.mentee.power.crm.spring.repository;
 
 import org.springframework.stereotype.Repository;
 import ru.mentee.power.crm.model.Lead;
-
 import java.util.Optional;
 import java.util.UUID;
 
