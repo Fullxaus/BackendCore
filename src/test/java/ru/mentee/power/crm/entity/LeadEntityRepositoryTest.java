@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import ru.mentee.power.crm.repository.LeadRepository;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LeadEntityRepositoryTest {
 
     @Autowired
-    private LeadEntityRepository repository;
+    private LeadRepository repository;
 
     private LeadEntity testLead;
 

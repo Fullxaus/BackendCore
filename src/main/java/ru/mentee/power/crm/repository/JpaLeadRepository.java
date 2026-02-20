@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.entity.LeadEntity;
-import ru.mentee.power.crm.entity.LeadEntityRepository;
 import ru.mentee.power.crm.model.Lead;
 
 import java.util.List;
@@ -17,26 +16,26 @@ import java.util.stream.Collectors;
 
 @Repository
 @Profile("dev")
-public class JpaLeadRepository implements LeadRepository {
+public class JpaLeadRepository implements LeadDomainRepository {
 
     private static final Logger log = LoggerFactory.getLogger(JpaLeadRepository.class);
-    private final LeadEntityRepository entityRepository;
+    private final ru.mentee.power.crm.repository.LeadRepository jpaRepository;
 
-    public JpaLeadRepository(LeadEntityRepository entityRepository) {
-        this.entityRepository = entityRepository;
+    public JpaLeadRepository(ru.mentee.power.crm.repository.LeadRepository jpaRepository) {
+        this.jpaRepository = jpaRepository;
     }
 
     @Override
     public void save(Lead lead) {
         LeadEntity e = toEntity(lead);
-        entityRepository.save(e);
+        jpaRepository.save(e);
     }
 
     @Override
     public Lead findById(UUID id) {
         log.debug("Finding lead by ID: {}", id);
         try {
-            return entityRepository.findById(id)
+            return jpaRepository.findById(id)
                     .map(entity -> {
                         log.debug("Found LeadEntity: id={}, email={}, company={}", 
                                 entity.getId(), entity.getEmail(), entity.getCompany());
@@ -51,19 +50,19 @@ public class JpaLeadRepository implements LeadRepository {
 
     @Override
     public List<Lead> findAll() {
-        return entityRepository.findAll().stream()
+        return jpaRepository.findAll().stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void delete(UUID id) {
-        entityRepository.deleteById(id);
+        jpaRepository.deleteById(id);
     }
 
     @Override
     public Optional<Lead> findByEmail(String email) {
-        return entityRepository.findByEmail(email)
+        return jpaRepository.findByEmail(email)
                 .map(this::toModel);
     }
 
