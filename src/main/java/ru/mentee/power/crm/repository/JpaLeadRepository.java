@@ -68,6 +68,14 @@ public class JpaLeadRepository implements LeadDomainRepository {
     }
 
     @Override
+    public Lead findByIdForUpdate(UUID id) {
+        log.debug("Finding lead by ID for update (pessimistic lock): {}", id);
+        return jpaRepository.findByIdForUpdate(id)
+                .map(this::toModel)
+                .orElse(null);
+    }
+
+    @Override
     public List<Lead> findAll() {
         return jpaRepository.findAll().stream()
                 .map(this::toModel)
