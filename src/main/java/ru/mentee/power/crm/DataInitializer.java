@@ -11,6 +11,7 @@ import ru.mentee.power.crm.domain.DealStatus;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.service.LeadStatusService;
 import ru.mentee.power.crm.spring.repository.DealRepository;
 import ru.mentee.power.crm.spring.service.DealService;
 
@@ -26,24 +27,30 @@ public class DataInitializer implements CommandLineRunner {
     public static final UUID QUALIFIED_LEAD_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
     private final LeadService leadService;
-    private final ru.mentee.power.crm.repository.LeadRepository coreLeadRepository;
+    private final ru.mentee.power.crm.repository.LeadDomainRepository coreLeadRepository;
     private final DealService dealService;
     private final DealRepository dealRepository;
+    private final LeadStatusService leadStatusService;
 
     public DataInitializer(LeadService leadService,
-                           ru.mentee.power.crm.repository.LeadRepository coreLeadRepository,
+                           ru.mentee.power.crm.repository.LeadDomainRepository coreLeadRepository,
                            DealService dealService,
-                           DealRepository dealRepository) {
+                           DealRepository dealRepository,
+                           LeadStatusService leadStatusService) {
         this.leadService = leadService;
         this.coreLeadRepository = coreLeadRepository;
         this.dealService = dealService;
         this.dealRepository = dealRepository;
+        this.leadStatusService = leadStatusService;
     }
 
     @Override
     public void run(String... args) {
         log.info("Начало инициализации тестовых данных...");
-        
+
+        // Инициализация статусов лидов через LeadStatusService
+        leadStatusService.ensureStatusesInitialized();
+        log.info("Статусы лидов инициализированы: {} записей", leadStatusService.findAllStatuses().size());
         // Безопасное добавление лидов - игнорируем ошибки дублирования при повторном запуске
         addLeadIfNotExists("test1@example.com", "Company1", LeadStatus.NEW, new Address("Moscow", "Suvorova", "123456"), "+71234567890");
         addLeadIfNotExists("test2@example.com", "Company2", LeadStatus.NEW, new Address("St.Petersburg", "Pushkinskaya", "987654"), "+79876543210");

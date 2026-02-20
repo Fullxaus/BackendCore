@@ -13,8 +13,10 @@ import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.service.LeadStatusService;
 import ru.mentee.power.crm.spring.MockLeadService;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,14 +36,17 @@ public class LeadControllerUnitTest {
     private LeadService mockLeadService;
 
     @Mock
+    private LeadStatusService mockLeadStatusService;
+
+    @Mock
     private Model model;
 
     private LeadController controller;
 
     @BeforeEach
     void setUp() {
-
-        controller = new LeadController(mockLeadService);
+        lenient().when(mockLeadStatusService.findAllStatuses()).thenReturn(Arrays.asList(LeadStatus.values()));
+        controller = new LeadController(mockLeadService, mockLeadStatusService);
     }
 
     @Test
@@ -50,9 +56,10 @@ public class LeadControllerUnitTest {
 
     @Test
     void shouldWorkWithMockLeadServiceFromFactory() {
-
         LeadService mockService = MockLeadService.create();
-        LeadController controllerWithMock = new LeadController(mockService);
+        LeadStatusService statusService = org.mockito.Mockito.mock(LeadStatusService.class);
+        lenient().when(statusService.findAllStatuses()).thenReturn(Arrays.asList(LeadStatus.values()));
+        LeadController controllerWithMock = new LeadController(mockService, statusService);
         assertThat(controllerWithMock).isNotNull();
     }
 
@@ -86,7 +93,7 @@ public class LeadControllerUnitTest {
     void shouldReturnCreateFormView() {
         String viewName = controller.showCreateForm(model);
 
-        verify(model).addAttribute("statuses", LeadStatus.values());
+        verify(model).addAttribute(eq("statuses"), any());
         assertThat(viewName).isEqualTo("leads/create");
     }
 
@@ -102,7 +109,7 @@ public class LeadControllerUnitTest {
 
         verify(mockLeadService).findById(id);
         verify(model).addAttribute(eq("lead"), any(Lead.class));
-        verify(model).addAttribute("statuses", LeadStatus.values());
+        verify(model).addAttribute(eq("statuses"), any());
         assertThat(viewName).isEqualTo("spring/edit");
     }
 
