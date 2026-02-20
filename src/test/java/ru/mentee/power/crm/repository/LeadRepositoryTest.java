@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
-import ru.mentee.power.crm.repository.InMemoryLeadRepository;
-import ru.mentee.power.crm.repository.LeadDomainRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

@@ -17,6 +17,8 @@ import java.util.Optional;
  * Сервис для работы с LeadEntity через JPA репозиторий.
  * Использует новые методы репозитория: derived methods, JPQL, пагинацию и bulk операции.
  */
+
+
 @Service
 public class LeadEntityService {
 

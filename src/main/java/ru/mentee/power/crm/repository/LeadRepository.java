@@ -17,6 +17,8 @@ import java.util.UUID;
  * JPA Repository для работы с LeadEntity.
  * Расширен derived methods, JPQL запросами, пагинацией и bulk операциями.
  */
+
+
 public interface LeadRepository extends JpaRepository<LeadEntity, UUID> {
 
     // ========== Derived Methods ==========
