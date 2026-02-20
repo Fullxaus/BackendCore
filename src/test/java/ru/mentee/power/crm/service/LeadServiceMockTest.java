@@ -10,6 +10,7 @@ import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.repository.LeadDomainRepository;
+import ru.mentee.power.crm.spring.repository.DealRepository;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -24,11 +25,14 @@ public class LeadServiceMockTest {
     @Mock
     private LeadDomainRepository mockRepository;
 
+    @Mock
+    private DealRepository mockDealRepository;
+
     private LeadService service;
 
     @BeforeEach
     void setUp() {
-        service = new LeadService(mockRepository);
+        service = new LeadService(mockRepository, mockDealRepository);
     }
 
     @Test

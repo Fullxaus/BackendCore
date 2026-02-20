@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @ActiveProfiles("test")
-class CrmIntegrationTest {
+public class CrmIntegrationTest {
 
     @Autowired
     private DataSource dataSource;

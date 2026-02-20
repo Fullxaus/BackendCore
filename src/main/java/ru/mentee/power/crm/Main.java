@@ -9,6 +9,7 @@ import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import ru.mentee.power.crm.repository.LeadDomainRepository;
 import ru.mentee.power.crm.repository.MemoryRepositoryLeadStatus;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.spring.repository.InMemoryDealRepository;
 import ru.mentee.power.crm.service.LeadStatusService;
 import ru.mentee.power.crm.servlet.LeadListServlet;
 
@@ -19,7 +20,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         LeadDomainRepository repository = new InMemoryLeadRepository();
-        LeadService leadService = new LeadService(repository);
+        LeadService leadService = new LeadService(repository, new InMemoryDealRepository());
 
         MemoryRepositoryLeadStatus statusRepository = new MemoryRepositoryLeadStatus();
         LeadStatusService leadStatusService = new LeadStatusService(statusRepository);

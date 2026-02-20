@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-@Profile("!dev")
+@Profile("default")
 public class InMemoryLeadRepository implements LeadDomainRepository {
 
     private final Map<UUID, Lead> storage = new HashMap<>();

@@ -58,6 +58,7 @@ java {
 
 test {
     useJUnitPlatform()
+    jacoco.enabled = false  // отключаем агент JaCoCo: несовместим с Java 24 (class version 68)
     finalizedBy jacocoTestReport
 }
 

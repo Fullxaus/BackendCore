@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
-class LeadEntityRepositoryTest {
+public class LeadEntityRepositoryTest {
 
     @Autowired
     private LeadRepository repository;
