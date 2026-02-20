@@ -16,6 +16,12 @@ public interface LeadDomainRepository {
 
     Lead findById(UUID id);
 
+    /**
+     * Поиск лида по ID с пессимистической блокировкой (FOR UPDATE).
+     * Для критической операции конверсии Lead → Deal.
+     */
+    Lead findByIdForUpdate(UUID id);
+
     List<Lead> findAll();
 
     void delete(UUID id);

@@ -3,11 +3,13 @@ package ru.mentee.power.crm.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.mentee.power.crm.entity.LeadEntity;
 
+import jakarta.persistence.LockModeType;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -78,6 +80,15 @@ public interface LeadRepository extends JpaRepository<LeadEntity, UUID> {
      */
     @Query(value = "SELECT * FROM leads WHERE email = ?1", nativeQuery = true)
     Optional<LeadEntity> findByEmailNative(String email);
+
+    /**
+     * Поиск лида по ID с пессимистической блокировкой (SELECT ... FOR UPDATE).
+     * Используется для критической операции конверсии Lead → Deal.
+     * Вторая транзакция ждёт завершения первой — lost update не происходит.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT l FROM LeadEntity l WHERE l.id = :id")
+    Optional<LeadEntity> findByIdForUpdate(@Param("id") UUID id);
 
     // ========== JPQL Queries ==========
 

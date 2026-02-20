@@ -1,4 +1,3 @@
-
 logging:
   level:
     ROOT: DEBUG
@@ -12,6 +11,8 @@ server:
 spring:
   application:
     name: mentee-power-crm
+  jpa:
+    show-sql: true
   # Datasource and JPA are in application-dev.yml (PostgreSQL) and application-test.yml (H2)
   # Для запуска с PostgreSQL используйте: --spring.profiles.active=dev
   # Для запуска без профиля будет использоваться InMemoryLeadRepository

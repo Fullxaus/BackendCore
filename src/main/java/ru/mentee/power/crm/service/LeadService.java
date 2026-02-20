@@ -143,7 +143,7 @@ public class LeadService {
      */
     @Transactional
     public Deal convertLeadToDeal(UUID leadId, BigDecimal amount) {
-        Lead lead = repository.findById(leadId);
+        Lead lead = repository.findByIdForUpdate(leadId);
         if (lead == null) {
             throw new IllegalArgumentException("Lead not found: " + leadId);
         }

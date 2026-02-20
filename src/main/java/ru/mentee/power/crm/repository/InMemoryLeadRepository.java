@@ -30,6 +30,11 @@ public class InMemoryLeadRepository implements LeadDomainRepository {
     }
 
     @Override
+    public Lead findByIdForUpdate(UUID id) {
+        return storage.get(id);
+    }
+
+    @Override
     public List<Lead> findAll() {
         return new ArrayList<>(storage.values());
     }
