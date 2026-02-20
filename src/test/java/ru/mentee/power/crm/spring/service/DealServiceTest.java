@@ -8,7 +8,7 @@ import ru.mentee.power.crm.domain.Deal;
 import ru.mentee.power.crm.domain.DealStatus;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
-import ru.mentee.power.crm.repository.LeadRepository;
+import ru.mentee.power.crm.repository.LeadDomainRepository;
 import ru.mentee.power.crm.spring.repository.DealRepository;
 import ru.mentee.power.crm.spring.repository.InMemoryDealRepository;
 import ru.mentee.power.crm.spring.repository.LeadRepositoryAdapter;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class DealServiceTest {
 
     private DealService dealService;
-    private ru.mentee.power.crm.repository.LeadRepository coreLeadRepository;
+    private ru.mentee.power.crm.repository.LeadDomainRepository coreLeadRepository;
     private DealRepository dealRepository;
 
     @BeforeEach

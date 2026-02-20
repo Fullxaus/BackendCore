@@ -8,7 +8,7 @@ import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.repository.InMemoryLeadRepository;
-import ru.mentee.power.crm.repository.LeadRepository;
+import ru.mentee.power.crm.repository.LeadDomainRepository;
 import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.service.LeadStatusService;
 
@@ -31,7 +31,7 @@ public class LeadEditFlowTest {
 
     private LeadController controller;
     private LeadService leadService;
-    private LeadRepository repository;
+    private LeadDomainRepository repository;
     private Model model;
 
     @BeforeEach

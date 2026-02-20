@@ -27,13 +27,13 @@ public class DataInitializer implements CommandLineRunner {
     public static final UUID QUALIFIED_LEAD_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
     private final LeadService leadService;
-    private final ru.mentee.power.crm.repository.LeadRepository coreLeadRepository;
+    private final ru.mentee.power.crm.repository.LeadDomainRepository coreLeadRepository;
     private final DealService dealService;
     private final DealRepository dealRepository;
     private final LeadStatusService leadStatusService;
 
     public DataInitializer(LeadService leadService,
-                           ru.mentee.power.crm.repository.LeadRepository coreLeadRepository,
+                           ru.mentee.power.crm.repository.LeadDomainRepository coreLeadRepository,
                            DealService dealService,
                            DealRepository dealRepository,
                            LeadStatusService leadStatusService) {

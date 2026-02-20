@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 public class DataInitializerTest {
 
     private LeadService leadService;
-    private ru.mentee.power.crm.repository.LeadRepository coreLeadRepository;
+    private ru.mentee.power.crm.repository.LeadDomainRepository coreLeadRepository;
     private DealRepository dealRepository;
     private LeadStatusService leadStatusService;
     private DataInitializer dataInitializer;
@@ -25,7 +25,7 @@ public class DataInitializerTest {
     @BeforeEach
     void setUp() {
         leadService = mock(LeadService.class);
-        coreLeadRepository = mock(ru.mentee.power.crm.repository.LeadRepository.class);
+        coreLeadRepository = mock(ru.mentee.power.crm.repository.LeadDomainRepository.class);
         dealRepository = mock(DealRepository.class);
         leadStatusService = mock(LeadStatusService.class);
         when(leadService.findAll()).thenReturn(Collections.emptyList());

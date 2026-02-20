@@ -8,14 +8,15 @@ import java.util.UUID;
 
 @Repository
 public class LeadRepositoryAdapter implements LeadRepository {
-    private final ru.mentee.power.crm.repository.LeadRepository delegate;
+    private final ru.mentee.power.crm.repository.LeadDomainRepository delegate;
 
-    public LeadRepositoryAdapter(ru.mentee.power.crm.repository.LeadRepository delegate) {
+    public LeadRepositoryAdapter(ru.mentee.power.crm.repository.LeadDomainRepository delegate) {
         this.delegate = delegate;
     }
 
     @Override
     public Optional<Lead> findById(UUID id) {
+        // LeadDomainRepository возвращает Lead напрямую, не Optional
         Lead lead = delegate.findById(id);
         return Optional.ofNullable(lead);
     }
