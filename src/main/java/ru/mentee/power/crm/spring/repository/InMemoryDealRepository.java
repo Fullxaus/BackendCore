@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-@org.springframework.context.annotation.Profile("!dev")
+@org.springframework.context.annotation.Profile("default")
 public class InMemoryDealRepository implements DealRepository {
     private final Map<UUID, Deal> storage = new ConcurrentHashMap<>();
 

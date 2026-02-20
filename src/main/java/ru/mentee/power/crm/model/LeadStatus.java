@@ -5,6 +5,8 @@ public enum LeadStatus {
     NEW("Новый"),
     CONTACTED("На связи"),
     QUALIFIED("Квалифицирован"),
+    CONVERTED("Конвертирован в сделку"),
+    PROCESSED("Обработан"),
     ORDER_FORMING("Заказ формируется"),
     SORTED("Отсортирован"),
     ASSEMBLED("Собран"),

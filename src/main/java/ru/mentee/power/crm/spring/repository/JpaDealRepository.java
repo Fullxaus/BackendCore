@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-@Profile("dev")
+@Profile({"dev", "test"})
 public class JpaDealRepository implements DealRepository {
 
     private final DealEntityRepository entityRepository;

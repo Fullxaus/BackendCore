@@ -2,13 +2,13 @@ package ru.mentee.power.crm.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -19,10 +19,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LeadEntity {
+public class LeadEntity implements Persistable<UUID> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, unique = true, length = 255)
@@ -48,6 +47,18 @@ public class LeadEntity {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @Override
+    public boolean isNew() {
+        return id == null;
+    }
+
+    @PrePersist
+    void ensureId() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

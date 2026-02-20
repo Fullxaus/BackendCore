@@ -3,6 +3,7 @@ package ru.mentee.power.crm.spring.service;
 import org.springframework.stereotype.Service;
 import ru.mentee.power.crm.domain.Deal;
 import ru.mentee.power.crm.domain.DealStatus;
+import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.spring.repository.DealRepository;
 import ru.mentee.power.crm.spring.repository.LeadRepository;
 
@@ -16,20 +17,17 @@ import java.util.stream.Collectors;
 public class DealService {
     private final DealRepository dealRepository;
     private final LeadRepository leadRepository;
+    private final LeadService leadService;
 
-    public DealService(DealRepository dealRepository, LeadRepository leadRepository) {
+    public DealService(DealRepository dealRepository, LeadRepository leadRepository, LeadService leadService) {
         this.dealRepository = dealRepository;
         this.leadRepository = leadRepository;
+        this.leadService = leadService;
     }
 
+    /** Делегирует атомарную конверсию в LeadService (с @Transactional). */
     public Deal convertLeadToDeal(UUID leadId, BigDecimal amount) {
-        return leadRepository.findById(leadId)
-                .map(lead -> {
-                    Deal deal = new Deal(leadId, amount);
-                    dealRepository.save(deal);
-                    return deal;
-                })
-                .orElseThrow(() -> new IllegalArgumentException("Lead not found: " + leadId));
+        return leadService.convertLeadToDeal(leadId, amount);
     }
 
     public Deal transitionDealStatus(UUID dealId, DealStatus newStatus) {

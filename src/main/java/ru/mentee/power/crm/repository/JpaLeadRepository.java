@@ -1,5 +1,6 @@
 package ru.mentee.power.crm.repository;
 
+import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -14,20 +15,39 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-@Profile("dev")
+@Profile({"dev", "test"})
 public class JpaLeadRepository implements LeadDomainRepository {
 
     private static final Logger log = LoggerFactory.getLogger(JpaLeadRepository.class);
     private final LeadRepository jpaRepository;
+    private final EntityManager entityManager;
 
-    public JpaLeadRepository(LeadRepository jpaRepository) {
+    public JpaLeadRepository(LeadRepository jpaRepository, EntityManager entityManager) {
         this.jpaRepository = jpaRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
     public void save(Lead lead) {
-        LeadEntity e = toEntity(lead);
-        jpaRepository.save(e);
+        if (jpaRepository.findById(lead.id()).isEmpty()) {
+            entityManager.persist(toEntity(lead));
+        } else {
+            LeadEntity e = jpaRepository.findById(lead.id()).orElseThrow();
+            copyLeadToEntity(lead, e);
+            jpaRepository.save(e);
+        }
+    }
+
+    private void copyLeadToEntity(Lead lead, LeadEntity e) {
+        e.setEmail(lead.contact().email());
+        e.setPhone(lead.contact().phone());
+        e.setCompany(lead.company());
+        e.setStatus(lead.status());
+        if (lead.contact().address() != null) {
+            e.setCity(lead.contact().address().city());
+            e.setStreet(lead.contact().address().street());
+            e.setZip(lead.contact().address().zip());
+        }
     }
 
     @Override

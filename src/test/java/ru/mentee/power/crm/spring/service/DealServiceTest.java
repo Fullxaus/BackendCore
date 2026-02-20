@@ -9,6 +9,7 @@ import ru.mentee.power.crm.domain.DealStatus;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.repository.LeadDomainRepository;
+import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.spring.repository.DealRepository;
 import ru.mentee.power.crm.spring.repository.InMemoryDealRepository;
 import ru.mentee.power.crm.spring.repository.LeadRepositoryAdapter;
@@ -30,7 +31,8 @@ public class DealServiceTest {
         coreLeadRepository = new ru.mentee.power.crm.repository.InMemoryLeadRepository();
         dealRepository = new InMemoryDealRepository();
         var leadRepository = new LeadRepositoryAdapter(coreLeadRepository);
-        dealService = new DealService(dealRepository, leadRepository);
+        LeadService leadService = new LeadService(coreLeadRepository, dealRepository);
+        dealService = new DealService(dealRepository, leadRepository, leadService);
     }
 
     @Test
@@ -48,6 +50,7 @@ public class DealServiceTest {
         assertThat(deal.getAmount()).isEqualByComparingTo("150000.00");
         assertThat(deal.getLeadId()).isEqualTo(leadId);
         assertThat(deal.getCreatedAt()).isNotNull();
+        assertThat(coreLeadRepository.findById(leadId).status()).isEqualTo(LeadStatus.CONVERTED.name());
     }
 
     @Test

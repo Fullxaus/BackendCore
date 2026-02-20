@@ -10,6 +10,7 @@ import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.repository.InMemoryLeadRepository;
 import ru.mentee.power.crm.repository.LeadDomainRepository;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.spring.repository.InMemoryDealRepository;
 import ru.mentee.power.crm.service.LeadStatusService;
 
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class LeadEditFlowTest {
     @BeforeEach
     void setUp() {
         repository = new InMemoryLeadRepository();
-        leadService = new LeadService(repository);
+        leadService = new LeadService(repository, new InMemoryDealRepository());
         LeadStatusService leadStatusService = mock(LeadStatusService.class);
         when(leadStatusService.findAllStatuses()).thenReturn(Arrays.asList(LeadStatus.values()));
         controller = new LeadController(leadService, leadStatusService);
