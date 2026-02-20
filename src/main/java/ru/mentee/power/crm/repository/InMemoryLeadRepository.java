@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Repository
 @Profile("!dev")
-public class InMemoryLeadRepository implements LeadRepository {
+public class InMemoryLeadRepository implements LeadDomainRepository {
 
     private final Map<UUID, Lead> storage = new HashMap<>();
     private final Map<String, UUID> emailIndex = new HashMap<>();

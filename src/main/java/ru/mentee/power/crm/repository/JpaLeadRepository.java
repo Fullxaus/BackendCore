@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 public class JpaLeadRepository implements LeadDomainRepository {
 
     private static final Logger log = LoggerFactory.getLogger(JpaLeadRepository.class);
-    private final ru.mentee.power.crm.repository.LeadRepository jpaRepository;
+    private final LeadRepository jpaRepository;
 
-    public JpaLeadRepository(ru.mentee.power.crm.repository.LeadRepository jpaRepository) {
+    public JpaLeadRepository(LeadRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
