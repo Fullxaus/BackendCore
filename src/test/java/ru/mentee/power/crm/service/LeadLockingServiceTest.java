@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @ActiveProfiles("test")
-class LeadLockingServiceTest {
+public class LeadLockingServiceTest {
 
     @Autowired
     private LeadLockingService lockingService;
@@ -78,23 +78,37 @@ class LeadLockingServiceTest {
         Future<Lead> f1 = executor.submit(() -> lockingService.updateStatusWithOptimisticLock(leadId, LeadStatus.CONTACTED));
         Future<Lead> f2 = executor.submit(() -> lockingService.updateStatusWithOptimisticLock(leadId, LeadStatus.QUALIFIED));
 
-        Lead first = f1.get();
-        assertThat(first).isNotNull();
-        assertThat(first.status()).isEqualTo(LeadStatus.CONTACTED.name());
-
-        // При конфликте версий вторая транзакция может получить OptimisticLockException
-        // (или Hibernate StaleObjectStateException). Если гонка дала оба успешных — только финальное состояние.
+        // В гонке любой из потоков может получить OptimisticLockException — проверяем оба.
+        Lead r1 = null;
+        Lead r2 = null;
+        ExecutionException ex1 = null;
+        ExecutionException ex2 = null;
         try {
-            Lead second = f2.get();
-            assertThat(second).isNotNull();
+            r1 = f1.get();
         } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
-            assertThat(cause).isNotNull();
-            assertThat(cause)
+            ex1 = e;
+        }
+        try {
+            r2 = f2.get();
+        } catch (ExecutionException e) {
+            ex2 = e;
+        }
+
+        assertThat(r1 != null || r2 != null).as("At least one update must succeed").isTrue();
+        if (ex1 != null) {
+            assertThat(ex1.getCause())
                     .isInstanceOfAny(
                             ObjectOptimisticLockingFailureException.class,
                             StaleObjectStateException.class);
         }
+        if (ex2 != null) {
+            assertThat(ex2.getCause())
+                    .isInstanceOfAny(
+                            ObjectOptimisticLockingFailureException.class,
+                            StaleObjectStateException.class);
+        }
+        if (r1 != null) assertThat(r1.status()).isIn(LeadStatus.CONTACTED.name(), LeadStatus.QUALIFIED.name());
+        if (r2 != null) assertThat(r2.status()).isIn(LeadStatus.CONTACTED.name(), LeadStatus.QUALIFIED.name());
 
         Lead after = leadService.findById(leadId).orElseThrow();
         assertThat(after.status()).isIn(LeadStatus.CONTACTED.name(), LeadStatus.QUALIFIED.name());

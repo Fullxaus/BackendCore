@@ -34,7 +34,7 @@ public class LeadEntityRepositoryTest {
         testLead = new LeadEntity();
         testLead.setEmail("test@mail.ru");
         testLead.setPhone("+79991234567");
-        testLead.setCompany("Test Company");
+        testLead.setCompanyName("Test Company");
         testLead.setStatus("NEW");
         testLead.setCity("Moscow");
         testLead.setStreet("Test Street");
@@ -51,7 +51,7 @@ public class LeadEntityRepositoryTest {
         assertThat(saved).isNotNull();
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getEmail()).isEqualTo("test@mail.ru");
-        assertThat(saved.getCompany()).isEqualTo("Test Company");
+        assertThat(saved.getCompanyName()).isEqualTo("Test Company");
         assertThat(saved.getStatus()).isEqualTo("NEW");
     }
 
@@ -67,7 +67,7 @@ public class LeadEntityRepositoryTest {
         // Then
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("test@mail.ru");
-        assertThat(found.get().getCompany()).isEqualTo("Test Company");
+        assertThat(found.get().getCompanyName()).isEqualTo("Test Company");
     }
 
     @Test
@@ -81,7 +81,7 @@ public class LeadEntityRepositoryTest {
         // Then
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("test@mail.ru");
-        assertThat(found.get().getCompany()).isEqualTo("Test Company");
+        assertThat(found.get().getCompanyName()).isEqualTo("Test Company");
     }
 
     @Test
@@ -95,7 +95,7 @@ public class LeadEntityRepositoryTest {
         // Then
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("test@mail.ru");
-        assertThat(found.get().getCompany()).isEqualTo("Test Company");
+        assertThat(found.get().getCompanyName()).isEqualTo("Test Company");
     }
 
     @Test
@@ -123,13 +123,13 @@ public class LeadEntityRepositoryTest {
         UUID id = saved.getId();
 
         // When
-        saved.setCompany("Updated Company");
+        saved.setCompanyName("Updated Company");
         saved.setStatus("CONTACTED");
         LeadEntity updated = repository.save(saved);
 
         // Then
         assertThat(updated.getId()).isEqualTo(id);
-        assertThat(updated.getCompany()).isEqualTo("Updated Company");
+        assertThat(updated.getCompanyName()).isEqualTo("Updated Company");
         assertThat(updated.getStatus()).isEqualTo("CONTACTED");
     }
 
@@ -153,14 +153,14 @@ public class LeadEntityRepositoryTest {
         LeadEntity lead1 = new LeadEntity();
         lead1.setEmail("lead1@mail.ru");
         lead1.setPhone("+79991111111");
-        lead1.setCompany("Company 1");
+        lead1.setCompanyName("Company 1");
         lead1.setStatus("NEW");
         lead1.setCreatedAt(Instant.now());
 
         LeadEntity lead2 = new LeadEntity();
         lead2.setEmail("lead2@mail.ru");
         lead2.setPhone("+79992222222");
-        lead2.setCompany("Company 2");
+        lead2.setCompanyName("Company 2");
         lead2.setStatus("QUALIFIED");
         lead2.setCreatedAt(Instant.now());
 
@@ -185,7 +185,7 @@ public class LeadEntityRepositoryTest {
         LeadEntity duplicateLead = new LeadEntity();
         duplicateLead.setEmail("test@mail.ru");
         duplicateLead.setPhone("+79998888888");
-        duplicateLead.setCompany("Another Company");
+        duplicateLead.setCompanyName("Another Company");
         duplicateLead.setStatus("NEW");
         duplicateLead.setCreatedAt(Instant.now());
 
@@ -239,7 +239,7 @@ public class LeadEntityRepositoryTest {
 
         // Then
         assertThat(acmeLeads).hasSize(2);
-        assertThat(acmeLeads).extracting(LeadEntity::getCompany)
+        assertThat(acmeLeads).extracting(LeadEntity::getCompanyName)
                 .containsOnly("Acme Corp");
     }
 
@@ -304,7 +304,7 @@ public class LeadEntityRepositoryTest {
         assertThat(results).hasSize(2);
         assertThat(results).extracting(LeadEntity::getStatus)
                 .containsOnly("NEW");
-        assertThat(results).extracting(LeadEntity::getCompany)
+        assertThat(results).extracting(LeadEntity::getCompanyName)
                 .containsOnly("Acme Corp");
     }
 
@@ -528,7 +528,7 @@ public class LeadEntityRepositoryTest {
         LeadEntity lead = new LeadEntity();
         lead.setEmail(email);
         lead.setPhone("+79991234567");
-        lead.setCompany(company);
+        lead.setCompanyName(company);
         lead.setStatus(status);
         lead.setCity("Moscow");
         lead.setStreet("Test Street");

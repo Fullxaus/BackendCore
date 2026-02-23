@@ -38,10 +38,11 @@ public interface LeadRepository extends JpaRepository<LeadEntity, UUID> {
     List<LeadEntity> findByStatus(String status);
 
     /**
-     * Поиск лидов по компании.
+     * Поиск лидов по названию компании (поле company / companyName).
      * SQL: SELECT * FROM leads WHERE company = ?
      */
-    List<LeadEntity> findByCompany(String company);
+    @Query("SELECT l FROM LeadEntity l WHERE l.companyName = :company")
+    List<LeadEntity> findByCompany(@Param("company") String company);
 
     /**
      * Подсчёт лидов по статусу.
@@ -62,10 +63,10 @@ public interface LeadRepository extends JpaRepository<LeadEntity, UUID> {
     List<LeadEntity> findByEmailContaining(String emailPart);
 
     /**
-     * Поиск по статусу И компании.
-     * SQL: SELECT * FROM leads WHERE status = ? AND company = ?
+     * Поиск по статусу И названию компании.
      */
-    List<LeadEntity> findByStatusAndCompany(String status, String company);
+    @Query("SELECT l FROM LeadEntity l WHERE l.status = :status AND l.companyName = :company")
+    List<LeadEntity> findByStatusAndCompany(@Param("status") String status, @Param("company") String company);
 
     /**
      * Поиск с сортировкой по дате создания (от новых к старым).
@@ -110,7 +111,7 @@ public interface LeadRepository extends JpaRepository<LeadEntity, UUID> {
     /**
      * Поиск лидов с фильтрацией и сортировкой (JPQL).
      */
-    @Query("SELECT l FROM LeadEntity l WHERE l.company = :company ORDER BY l.createdAt DESC")
+    @Query("SELECT l FROM LeadEntity l WHERE l.companyName = :company ORDER BY l.createdAt DESC")
     List<LeadEntity> findByCompanyOrderedByDate(@Param("company") String company);
 
     // ========== Pagination Methods ==========
@@ -128,9 +129,10 @@ public interface LeadRepository extends JpaRepository<LeadEntity, UUID> {
     Page<LeadEntity> findByStatus(String status, Pageable pageable);
 
     /**
-     * Поиск по компании с пагинацией.
+     * Поиск по названию компании с пагинацией.
      */
-    Page<LeadEntity> findByCompany(String company, Pageable pageable);
+    @Query("SELECT l FROM LeadEntity l WHERE l.companyName = :company")
+    Page<LeadEntity> findByCompany(@Param("company") String company, Pageable pageable);
 
     /**
      * JPQL запрос с пагинацией.
