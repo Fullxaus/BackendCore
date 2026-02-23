@@ -2,10 +2,14 @@ package ru.mentee.power.crm.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,8 +34,14 @@ public class LeadEntity {
     @Column(nullable = false, length = 50)
     private String phone;
 
-    @Column(nullable = false, length = 255)
-    private String company;
+    /** Название компании (денормализованное, для доменной модели и обратной совместимости). */
+    @Column(name = "company", nullable = false, length = 255)
+    private String companyName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    @Setter(AccessLevel.NONE)
+    private Company company;
 
     @Column(nullable = false, length = 50)
     private String status;
@@ -50,6 +60,25 @@ public class LeadEntity {
 
     @Version
     private Long version;
+
+    /**
+     * Имя компании для доменной модели: из связи Company или денормализованное поле.
+     */
+    public String getCompanyName() {
+        return company != null ? company.getName() : companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    /** Устанавливает связь с компанией и синхронизирует денормализованное имя (колонка company NOT NULL). */
+    public void setCompany(Company company) {
+        this.company = company;
+        if (company != null) {
+            this.companyName = company.getName();
+        }
+    }
 
     @PrePersist
     void ensureId() {

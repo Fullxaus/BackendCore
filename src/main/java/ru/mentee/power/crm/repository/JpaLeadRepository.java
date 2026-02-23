@@ -41,7 +41,7 @@ public class JpaLeadRepository implements LeadDomainRepository {
     private void copyLeadToEntity(Lead lead, LeadEntity e) {
         e.setEmail(lead.contact().email());
         e.setPhone(lead.contact().phone());
-        e.setCompany(lead.company());
+        e.setCompanyName(lead.company());
         e.setStatus(lead.status());
         if (lead.contact().address() != null) {
             e.setCity(lead.contact().address().city());
@@ -57,7 +57,7 @@ public class JpaLeadRepository implements LeadDomainRepository {
             return jpaRepository.findById(id)
                     .map(entity -> {
                         log.debug("Found LeadEntity: id={}, email={}, company={}", 
-                                entity.getId(), entity.getEmail(), entity.getCompany());
+                                entity.getId(), entity.getEmail(), entity.getCompanyName());
                         return toModel(entity);
                     })
                     .orElse(null);
@@ -98,7 +98,7 @@ public class JpaLeadRepository implements LeadDomainRepository {
         e.setId(lead.id());
         e.setEmail(lead.contact().email());
         e.setPhone(lead.contact().phone());
-        e.setCompany(lead.company());
+        e.setCompanyName(lead.company());
         e.setStatus(lead.status());
         if (lead.contact().address() != null) {
             e.setCity(lead.contact().address().city());
@@ -121,7 +121,7 @@ public class JpaLeadRepository implements LeadDomainRepository {
             }
             
             log.debug("Converting LeadEntity to Lead: id={}, email={}, phone={}, company={}, status={}", 
-                    e.getId(), e.getEmail(), e.getPhone(), e.getCompany(), e.getStatus());
+                    e.getId(), e.getEmail(), e.getPhone(), e.getCompanyName(), e.getStatus());
             
             // Безопасное создание Address с проверкой на null и пустые строки
             String city = (e.getCity() != null && !e.getCity().isEmpty()) ? e.getCity() : "-";
@@ -152,8 +152,8 @@ public class JpaLeadRepository implements LeadDomainRepository {
                 throw ex;
             }
             
-            // Безопасное создание Lead
-            String company = (e.getCompany() != null && !e.getCompany().isEmpty()) ? e.getCompany() : "Unknown";
+            // Безопасное создание Lead (имя компании из связи или денормализованное поле)
+            String company = (e.getCompanyName() != null && !e.getCompanyName().isEmpty()) ? e.getCompanyName() : "Unknown";
             String status = (e.getStatus() != null && !e.getStatus().isEmpty()) ? e.getStatus() : "NEW";
             
             log.debug("Creating Lead: id={}, company={}, status={}", e.getId(), company, status);
@@ -174,7 +174,7 @@ public class JpaLeadRepository implements LeadDomainRepository {
                     e != null ? e.getId() : "null", 
                     e != null ? e.getEmail() : "null", 
                     e != null ? e.getPhone() : "null", 
-                    e != null ? e.getCompany() : "null", 
+                    e != null ? e.getCompanyName() : "null", 
                     e != null ? e.getStatus() : "null", 
                     e != null ? e.getCity() : "null", 
                     e != null ? e.getStreet() : "null", 
@@ -186,7 +186,7 @@ public class JpaLeadRepository implements LeadDomainRepository {
                     e != null ? e.getId() : "null", 
                     e != null ? e.getEmail() : "null", 
                     e != null ? e.getPhone() : "null", 
-                    e != null ? e.getCompany() : "null", 
+                    e != null ? e.getCompanyName() : "null", 
                     e != null ? e.getStatus() : "null", 
                     e != null ? e.getCity() : "null", 
                     e != null ? e.getStreet() : "null", 
