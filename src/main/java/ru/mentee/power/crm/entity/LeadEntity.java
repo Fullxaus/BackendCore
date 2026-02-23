@@ -9,7 +9,6 @@ import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -20,7 +19,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LeadEntity implements Persistable<UUID> {
+public class LeadEntity {
 
     @Id
     private UUID id;
@@ -51,11 +50,6 @@ public class LeadEntity implements Persistable<UUID> {
 
     @Version
     private Long version;
-
-    @Override
-    public boolean isNew() {
-        return id == null;
-    }
 
     @PrePersist
     void ensureId() {
