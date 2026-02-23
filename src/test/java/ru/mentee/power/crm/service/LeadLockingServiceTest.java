@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.hibernate.StaleObjectStateException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.Lead;
@@ -20,7 +21,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Тест конкурентного доступа: два потока обновляют один Lead.
@@ -82,15 +82,18 @@ class LeadLockingServiceTest {
         assertThat(first).isNotNull();
         assertThat(first.status()).isEqualTo(LeadStatus.CONTACTED.name());
 
-        // При конфликте версий вторая транзакция получает OptimisticLockException.
-        // Если гонка дала оба успешных — проверяем только финальное состояние.
+        // При конфликте версий вторая транзакция может получить OptimisticLockException
+        // (или Hibernate StaleObjectStateException). Если гонка дала оба успешных — только финальное состояние.
         try {
             Lead second = f2.get();
             assertThat(second).isNotNull();
         } catch (ExecutionException e) {
-            assertThatThrownBy(() -> {
-                throw e.getCause();
-            }).isInstanceOf(ObjectOptimisticLockingFailureException.class);
+            Throwable cause = e.getCause();
+            assertThat(cause).isNotNull();
+            assertThat(cause)
+                    .isInstanceOfAny(
+                            ObjectOptimisticLockingFailureException.class,
+                            StaleObjectStateException.class);
         }
 
         Lead after = leadService.findById(leadId).orElseThrow();
