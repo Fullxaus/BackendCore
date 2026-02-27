@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Сущность компании. Связь 1:N с Lead через OneToMany/ManyToOne.
+ * Сущность компании. Связь 1:N с Lead по company_id — компании идентифицируются по id.
  */
 @Entity
 @Table(name = "companies")
@@ -42,26 +42,18 @@ public class Company {
     @OneToMany(mappedBy = "company", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<LeadEntity> leads = new ArrayList<>();
 
-    /**
-     * Синхронизация обеих сторон связи: добавляет лид в коллекцию и устанавливает company у лида.
-     */
+    /** Синхронизация обеих сторон связи: добавляет лид в коллекцию и устанавливает company у лида. */
     public void addLead(LeadEntity lead) {
-        if (lead == null) {
-            return;
-        }
+        if (lead == null) return;
         if (!leads.contains(lead)) {
             leads.add(lead);
             lead.setCompany(this);
         }
     }
 
-    /**
-     * Синхронизация обеих сторон связи: удаляет лид из коллекции и обнуляет company у лида.
-     */
+    /** Синхронизация обеих сторон связи: удаляет лид из коллекции и обнуляет company у лида. */
     public void removeLead(LeadEntity lead) {
-        if (lead == null) {
-            return;
-        }
+        if (lead == null) return;
         if (leads.remove(lead)) {
             lead.setCompany(null);
         }

@@ -34,10 +34,11 @@ public class LeadEntity {
     @Column(nullable = false, length = 50)
     private String phone;
 
-    /** Название компании (денормализованное, для доменной модели и обратной совместимости). */
+    /** Денормализованное имя компании (колонка company) для отображения и NOT NULL. */
     @Column(name = "company", nullable = false, length = 255)
     private String companyName;
 
+    /** Связь с компанией по id — одна и та же компания (Сбербанк / Sberbank) идентифицируется по company_id. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     @Setter(AccessLevel.NONE)
@@ -61,9 +62,7 @@ public class LeadEntity {
     @Version
     private Long version;
 
-    /**
-     * Имя компании для доменной модели: из связи Company или денормализованное поле.
-     */
+    /** Имя компании для доменной модели: из связи Company или денормализованное поле. */
     public String getCompanyName() {
         return company != null ? company.getName() : companyName;
     }

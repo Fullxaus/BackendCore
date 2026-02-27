@@ -1,4 +1,4 @@
-# Profile: test — H2 in-memory (Hibernate ddl-auto создаёт схему с version)
+# Profile: test — H2 in-memory (для @DataJpaTest срез создаёт схему через Hibernate)
 spring:
   liquibase:
     enabled: false

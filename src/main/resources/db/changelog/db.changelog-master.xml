@@ -4,6 +4,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <include file="db/changelog/changes/003-add-version-to-leads.xml" relativeToChangelogFile="false"/>
-    <include file="db/changelog/changes/004-add-companies-and-leads-company-id.xml" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/001_create_companies.sql"/>
+    <include file="db/changelog/migrations/002_create_leads.sql"/>
+    <include file="db/changelog/migrations/003_create_contacts.sql"/>
+    <include file="db/changelog/migrations/004_create_deals.sql"/>
+    <include file="db/changelog/migrations/005_create_products.sql"/>
+    <include file="db/changelog/migrations/006_add_company_id_to_leads.sql"/>
 </databaseChangeLog>

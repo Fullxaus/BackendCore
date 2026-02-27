@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
+import ru.mentee.power.crm.entity.Company;
 import ru.mentee.power.crm.entity.LeadEntity;
 import ru.mentee.power.crm.model.Lead;
+import ru.mentee.power.crm.model.LeadStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,10 +23,13 @@ public class JpaLeadRepository implements LeadDomainRepository {
     private static final Logger log = LoggerFactory.getLogger(JpaLeadRepository.class);
     private final LeadRepository jpaRepository;
     private final EntityManager entityManager;
+    private final CompanyRepository companyRepository;
 
-    public JpaLeadRepository(LeadRepository jpaRepository, EntityManager entityManager) {
+    public JpaLeadRepository(LeadRepository jpaRepository, EntityManager entityManager,
+                             CompanyRepository companyRepository) {
         this.jpaRepository = jpaRepository;
         this.entityManager = entityManager;
+        this.companyRepository = companyRepository;
     }
 
     @Override
@@ -41,13 +46,28 @@ public class JpaLeadRepository implements LeadDomainRepository {
     private void copyLeadToEntity(Lead lead, LeadEntity e) {
         e.setEmail(lead.contact().email());
         e.setPhone(lead.contact().phone());
-        e.setCompanyName(lead.company());
         e.setStatus(lead.status());
+        resolveAndSetCompany(e, lead.company());
         if (lead.contact().address() != null) {
             e.setCity(lead.contact().address().city());
             e.setStreet(lead.contact().address().street());
             e.setZip(lead.contact().address().zip());
         }
+    }
+
+    /** Находит компанию по имени или создаёт новую; устанавливает связь по company_id. */
+    private void resolveAndSetCompany(LeadEntity e, String companyName) {
+        if (companyName == null || companyName.isBlank()) {
+            e.setCompanyName("-");
+            return;
+        }
+        Company company = companyRepository.findByName(companyName)
+                .orElseGet(() -> {
+                    Company newCompany = new Company();
+                    newCompany.setName(companyName);
+                    return companyRepository.save(newCompany);
+                });
+        e.setCompany(company);
     }
 
     @Override
@@ -98,8 +118,8 @@ public class JpaLeadRepository implements LeadDomainRepository {
         e.setId(lead.id());
         e.setEmail(lead.contact().email());
         e.setPhone(lead.contact().phone());
-        e.setCompanyName(lead.company());
         e.setStatus(lead.status());
+        resolveAndSetCompany(e, lead.company());
         if (lead.contact().address() != null) {
             e.setCity(lead.contact().address().city());
             e.setStreet(lead.contact().address().street());
@@ -154,7 +174,8 @@ public class JpaLeadRepository implements LeadDomainRepository {
             
             // Безопасное создание Lead (имя компании из связи или денормализованное поле)
             String company = (e.getCompanyName() != null && !e.getCompanyName().isEmpty()) ? e.getCompanyName() : "Unknown";
-            String status = (e.getStatus() != null && !e.getStatus().isEmpty()) ? e.getStatus() : "NEW";
+            String statusRaw = (e.getStatus() != null && !e.getStatus().isEmpty()) ? e.getStatus() : "NEW";
+            String status = validLeadStatus(statusRaw);
             
             log.debug("Creating Lead: id={}, company={}, status={}", e.getId(), company, status);
             Lead lead;
@@ -193,5 +214,14 @@ public class JpaLeadRepository implements LeadDomainRepository {
                     e != null ? e.getZip() : "null");
             throw ex;
         }
+    }
+
+    private static String validLeadStatus(String value) {
+        if (value == null || value.isEmpty()) return "NEW";
+        for (LeadStatus s : LeadStatus.values()) {
+            if (s.name().equals(value)) return value;
+        }
+        if ("CONVERTED".equals(value)) return value;
+        return "NEW";
     }
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * AC1–AC5 и проверка N+1 (EntityGraph).
+ * AC1–AC5 и проверка N+1 (EntityGraph). Связь Company–Lead по company_id.
  */
 @DataJpaTest
 @ActiveProfiles("test")
@@ -65,7 +65,7 @@ public class CompanyRepositoryTest {
         LeadEntity loaded = leadRepository.findById(lead.getId()).orElseThrow();
         assertThat(loaded.getCompany()).isNotNull();
         assertThat(loaded.getCompany().getId()).isEqualTo(company.getId());
-        assertThat(loaded.getCompany().getName()).isEqualTo("Сбербанк");
+        assertThat(loaded.getCompanyName()).isEqualTo("Сбербанк");
     }
 
     @Test
