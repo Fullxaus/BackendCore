@@ -11,6 +11,8 @@ server:
 spring:
   application:
     name: mentee-power-crm
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
   jpa:
     show-sql: true
   # Datasource and JPA are in application-dev.yml (PostgreSQL) and application-test.yml (H2)
