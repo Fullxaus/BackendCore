@@ -1,15 +1,14 @@
 package ru.mentee.power.crm.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -34,6 +33,19 @@ public class DealEntity {
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @OneToMany(mappedBy = "deal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DealProduct> dealProducts = new ArrayList<>();
+
+    public void addDealProduct(DealProduct dealProduct) {
+        dealProducts.add(dealProduct);
+        dealProduct.setDeal(this);
+    }
+
+    public void removeDealProduct(DealProduct dealProduct) {
+        dealProducts.remove(dealProduct);
+        dealProduct.setDeal(null);
+    }
 
     @Override
     public boolean equals(Object o) {
