@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/migrations/001_create_companies.sql
+  - include:
+      file: db/changelog/migrations/002_create_leads.sql
+  - include:
+      file: db/changelog/migrations/003_create_contacts.sql
+  - include:
+      file: db/changelog/migrations/004_create_deals.sql
+  - include:
+      file: db/changelog/migrations/005_create_products.sql

@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @ActiveProfiles("test")
-class ProductJpaRepositoryTest {
+public class ProductJpaRepositoryTest {
 
     @Autowired
     private ProductJpaRepository productRepository;

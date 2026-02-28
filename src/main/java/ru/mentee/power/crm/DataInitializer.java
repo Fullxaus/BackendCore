@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.domain.Deal;
@@ -47,6 +48,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) {
         log.info("Начало инициализации тестовых данных...");
 
@@ -207,11 +209,10 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void addLeadIfNotExists(String email, String company, LeadStatus status, Address address, String phone) {
-        try {
+        if (leadService.findByEmail(email).isEmpty()) {
             leadService.addLead(email, company, status, address, phone);
             log.debug("Добавлен новый лид: {}", email);
-        } catch (IllegalStateException e) {
-            // Лид уже существует - игнорируем ошибку при повторном запуске
+        } else {
             log.debug("Лид уже существует, пропускаем: {}", email);
         }
     }
@@ -271,11 +272,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private Lead addLeadIfNotExistsAndGet(String email, String company, LeadStatus status, Address address, String phone) {
-        try {
-            return leadService.addLead(email, company, status, address, phone);
-        } catch (IllegalStateException e) {
-            // Лид уже существует - возвращаем существующий лид
-            return leadService.findByEmail(email).orElse(null);
-        }
+        return leadService.findByEmail(email)
+                .orElseGet(() -> leadService.addLead(email, company, status, address, phone));
     }
 }
