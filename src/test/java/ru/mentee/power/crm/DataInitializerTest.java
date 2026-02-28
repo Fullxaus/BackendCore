@@ -10,8 +10,10 @@ import ru.mentee.power.crm.service.LeadStatusService;
 import ru.mentee.power.crm.spring.repository.DealRepository;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 public class DataInitializerTest {
@@ -30,6 +32,7 @@ public class DataInitializerTest {
         leadStatusService = mock(LeadStatusService.class);
         when(leadService.findAll()).thenReturn(Collections.emptyList());
         when(leadStatusService.findAllStatuses()).thenReturn(Collections.emptyList());
+        when(leadService.findByEmail(anyString())).thenReturn(Optional.empty());
         dataInitializer = new DataInitializer(leadService, coreLeadRepository,
                 mock(ru.mentee.power.crm.spring.service.DealService.class), dealRepository, leadStatusService);
     }

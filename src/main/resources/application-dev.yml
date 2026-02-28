@@ -1,5 +1,5 @@
 # Profile: dev — PostgreSQL (Docker)
-# Схема БД управляется Liquibase (db/changelog). Hibernate не валидирует схему при старте.
+# Схема БД управляется только Liquibase (db/changelog). schema.sql не выполняется.
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/crm_db
@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   sql:
     init:
-      mode: always
+      mode: never
   liquibase:
     enabled: true
   jpa:

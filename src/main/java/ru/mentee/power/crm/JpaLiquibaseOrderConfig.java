@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JpaLiquibaseOrderConfig implements BeanFactoryPostProcessor, Ordered {
 
-    private static final String[] LIQUIBASE_BEAN_NAMES = {"liquibase", "springLiquibase"};
     private static final String EMF_BEAN_NAME = "entityManagerFactory";
     /** Выполняем раньше других post-processors, чтобы зависимость применилась. */
     private static final int ORDER = Ordered.HIGHEST_PRECEDENCE;
@@ -39,14 +38,8 @@ public class JpaLiquibaseOrderConfig implements BeanFactoryPostProcessor, Ordere
         if (emfNames.length == 0 && registry.containsBeanDefinition(EMF_BEAN_NAME)) {
             emfNames = new String[]{EMF_BEAN_NAME};
         }
-        String dependOnBean = "liquibase";
-        for (String candidate : LIQUIBASE_BEAN_NAMES) {
-            if (registry.containsBeanDefinition(candidate)) {
-                dependOnBean = candidate;
-                break;
-            }
-        }
-        final String liquibaseBeanName = dependOnBean;
+        // Всегда ставим зависимость от "liquibase", чтобы миграции выполнились до создания EMF
+        final String liquibaseBeanName = "liquibase";
         for (String name : emfNames) {
             if (!registry.containsBeanDefinition(name)) {
                 continue;

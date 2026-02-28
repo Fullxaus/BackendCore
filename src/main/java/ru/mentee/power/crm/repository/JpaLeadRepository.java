@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.domain.Contact;
 import ru.mentee.power.crm.entity.Company;
@@ -33,6 +34,7 @@ public class JpaLeadRepository implements LeadDomainRepository {
     }
 
     @Override
+    @Transactional
     public void save(Lead lead) {
         if (jpaRepository.findById(lead.id()).isEmpty()) {
             entityManager.persist(toEntity(lead));
