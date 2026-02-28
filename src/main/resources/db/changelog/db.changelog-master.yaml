@@ -9,3 +9,7 @@ databaseChangeLog:
       file: db/changelog/migrations/004_create_deals.sql
   - include:
       file: db/changelog/migrations/005_create_products.sql
+  - include:
+      file: db/changelog/migrations/006_create_deal_product.sql
+  - include:
+      file: db/changelog/migrations/007_create_deal_product_if_missing.sql
