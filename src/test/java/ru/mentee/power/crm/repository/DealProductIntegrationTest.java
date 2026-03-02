@@ -77,9 +77,10 @@ public class DealProductIntegrationTest {
         product2.setActive(true);
         product2 = productRepository.save(product2);
 
+        // AC: DealProduct(deal, product, quantity=3, unitPrice=81000) → связь в deal_product
         DealProduct dealProduct1 = new DealProduct();
         dealProduct1.setProduct(product1);
-        dealProduct1.setQuantity(2);
+        dealProduct1.setQuantity(3);
         dealProduct1.setUnitPrice(new BigDecimal("81000"));
 
         DealProduct dealProduct2 = new DealProduct();
@@ -100,10 +101,10 @@ public class DealProductIntegrationTest {
         assertThat(dealProducts).hasSize(2);
 
         DealProduct first = dealProducts.stream()
-                .filter(dp -> dp.getQuantity() == 2)
+                .filter(dp -> dp.getQuantity() == 3)
                 .findFirst()
                 .orElseThrow();
-        assertThat(first.getQuantity()).isEqualTo(2);
+        assertThat(first.getQuantity()).isEqualTo(3);
         assertThat(first.getUnitPrice()).isEqualByComparingTo(new BigDecimal("81000"));
         assertThat(first.getProduct()).isNotNull();
         assertThat(first.getProduct().getSku()).isEqualTo("LAPTOP-001");
