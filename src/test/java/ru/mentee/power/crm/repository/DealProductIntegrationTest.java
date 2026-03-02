@@ -46,6 +46,7 @@ public class DealProductIntegrationTest {
     @Autowired
     private DataSource dataSource;
 
+
     @Test
     void testSaveDealWithProducts() {
         LeadEntity lead = new LeadEntity();
@@ -186,6 +187,7 @@ public class DealProductIntegrationTest {
         assertThat(skusWithGraph).containsExactlyInAnyOrderElementsOf(skusWithout);
     }
 
+
     @Test
     void testExplainAnalyzeDealWithProductsQuery() throws Exception {
         LeadEntity lead = new LeadEntity();
@@ -242,6 +244,7 @@ public class DealProductIntegrationTest {
                 }
             }
         }
+
 
         Path outDir = Paths.get(System.getProperty("user.dir", "."), "build");
         Files.createDirectories(outDir);
