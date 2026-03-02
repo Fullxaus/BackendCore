@@ -32,6 +32,12 @@ public interface LeadRepository extends JpaRepository<LeadEntity, UUID> {
     Optional<LeadEntity> findByEmail(String email);
 
     /**
+     * Поиск лида по email без учёта регистра (case-insensitive).
+     * SQL: SELECT * FROM leads WHERE LOWER(email) = LOWER(?)
+     */
+    Optional<LeadEntity> findByEmailIgnoreCase(String email);
+
+    /**
      * Поиск лидов по статусу.
      * SQL: SELECT * FROM leads WHERE status = ?
      */
