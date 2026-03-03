@@ -1,79 +1,90 @@
 package ru.mentee.power.crm.domain;
 
-import org.junit.jupiter.api.Test;
-import java.util.UUID;
 import static org.assertj.core.api.Assertions.*;
+
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
 
 public class CustomerTest {
 
-    @Test
-    void shouldCreateCustomer() {
-        // Given
-        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
-        Address billingAddress = new Address("New York", "456 Broadway", "10001");
+  @Test
+  void shouldCreateCustomer() {
+    // Given
+    Contact contact =
+        new Contact(
+            "example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
+    Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
-        // When
-        Customer customer = new Customer(UUID.randomUUID(), contact, billingAddress, "GOLD");
+    // When
+    Customer customer = new Customer(UUID.randomUUID(), contact, billingAddress, "GOLD");
 
-        // Then
-        assertThat(customer.contact()).isEqualTo(contact);
-        assertThat(customer.billingAddress()).isEqualTo(billingAddress);
-        assertThat(customer.loyaltyTier()).isEqualTo("GOLD");
-    }
+    // Then
+    assertThat(customer.contact()).isEqualTo(contact);
+    assertThat(customer.billingAddress()).isEqualTo(billingAddress);
+    assertThat(customer.loyaltyTier()).isEqualTo("GOLD");
+  }
 
-    @Test
-    void shouldNotCreateCustomerWithInvalidLoyaltyTier() {
-        // Given
-        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
-        Address billingAddress = new Address("New York", "456 Broadway", "10001");
+  @Test
+  void shouldNotCreateCustomerWithInvalidLoyaltyTier() {
+    // Given
+    Contact contact =
+        new Contact(
+            "example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
+    Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
-        // When и Then
-        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, ""))
-                .isInstanceOf(IllegalArgumentException.class);
+    // When и Then
+    assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, ""))
+        .isInstanceOf(IllegalArgumentException.class);
 
-        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, "INVALID"))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, "INVALID"))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
 
-    @Test
-    void shouldNotCreateCustomerWithNullId() {
-        // Given
-        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
-        Address billingAddress = new Address("New York", "456 Broadway", "10001");
+  @Test
+  void shouldNotCreateCustomerWithNullId() {
+    // Given
+    Contact contact =
+        new Contact(
+            "example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
+    Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
-        // When и Then
-        assertThatThrownBy(() -> new Customer(null, contact, billingAddress, "GOLD"))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+    // When и Then
+    assertThatThrownBy(() -> new Customer(null, contact, billingAddress, "GOLD"))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
 
-    @Test
-    void shouldNotCreateCustomerWithNullContact() {
-        // Given
-        Address billingAddress = new Address("New York", "456 Broadway", "10001");
+  @Test
+  void shouldNotCreateCustomerWithNullContact() {
+    // Given
+    Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
-        // When и Then
-        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), null, billingAddress, "GOLD"))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+    // When и Then
+    assertThatThrownBy(() -> new Customer(UUID.randomUUID(), null, billingAddress, "GOLD"))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
 
-    @Test
-    void shouldNotCreateCustomerWithNullBillingAddress() {
-        // Given
-        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
+  @Test
+  void shouldNotCreateCustomerWithNullBillingAddress() {
+    // Given
+    Contact contact =
+        new Contact(
+            "example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
 
-        // When и Then
-        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, null, "GOLD"))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+    // When и Then
+    assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, null, "GOLD"))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
 
-    @Test
-    void shouldNotCreateCustomerWithNullLoyaltyTier() {
-        // Given
-        Contact contact = new Contact("example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
-        Address billingAddress = new Address("New York", "456 Broadway", "10001");
+  @Test
+  void shouldNotCreateCustomerWithNullLoyaltyTier() {
+    // Given
+    Contact contact =
+        new Contact(
+            "example@example.com", "1234567890", new Address("New York", "456 Broadway", "10001"));
+    Address billingAddress = new Address("New York", "456 Broadway", "10001");
 
-        // When и Then
-        assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, null))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+    // When и Then
+    assertThatThrownBy(() -> new Customer(UUID.randomUUID(), contact, billingAddress, null))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
 }

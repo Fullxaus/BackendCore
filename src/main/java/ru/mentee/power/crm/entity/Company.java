@@ -9,18 +9,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-/**
- * Сущность компании. Связь 1:N с Lead по company_id — компании идентифицируются по id.
- */
+/** Сущность компании. Связь 1:N с Lead по company_id — компании идентифицируются по id. */
 @Entity
 @Table(name = "companies")
 @Getter
@@ -29,33 +26,33 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Company {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Column(nullable = false, length = 255)
-    private String name;
+  @Column(nullable = false, length = 255)
+  private String name;
 
-    @Column(length = 100)
-    private String industry;
+  @Column(length = 100)
+  private String industry;
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private List<LeadEntity> leads = new ArrayList<>();
+  @OneToMany(mappedBy = "company", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+  private List<LeadEntity> leads = new ArrayList<>();
 
-    /** Синхронизация обеих сторон связи: добавляет лид в коллекцию и устанавливает company у лида. */
-    public void addLead(LeadEntity lead) {
-        if (lead == null) return;
-        if (!leads.contains(lead)) {
-            leads.add(lead);
-            lead.setCompany(this);
-        }
+  /** Синхронизация обеих сторон связи: добавляет лид в коллекцию и устанавливает company у лида. */
+  public void addLead(LeadEntity lead) {
+    if (lead == null) return;
+    if (!leads.contains(lead)) {
+      leads.add(lead);
+      lead.setCompany(this);
     }
+  }
 
-    /** Синхронизация обеих сторон связи: удаляет лид из коллекции и обнуляет company у лида. */
-    public void removeLead(LeadEntity lead) {
-        if (lead == null) return;
-        if (leads.remove(lead)) {
-            lead.setCompany(null);
-        }
+  /** Синхронизация обеих сторон связи: удаляет лид из коллекции и обнуляет company у лида. */
+  public void removeLead(LeadEntity lead) {
+    if (lead == null) return;
+    if (leads.remove(lead)) {
+      lead.setCompany(null);
     }
+  }
 }
