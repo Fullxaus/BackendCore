@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SetterDemoService {
 
-    public String getStatus() {
-        return "SETTER_INJECTED";
-    }
+  public String getStatus() {
+    return "SETTER_INJECTED";
+  }
 }

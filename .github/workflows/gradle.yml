@@ -33,13 +33,13 @@ jobs:
       - name: Clean Gradle cache
         run: ./gradlew clean --no-daemon
 
-      # 5. (Опционально) Сборка без тестов
-      - name: Build without tests
-        run: ./gradlew clean build -x test --no-daemon
+      # 5. Проверка форматирования Spotless (Google Java Format)
+      - name: Run Spotless check
+        run: ./gradlew spotlessCheck --no-daemon
 
-      # 6. Запускаем тесты с генерацией отчёта JaCoCo
-      - name: Run tests with JaCoCo
-        run: ./gradlew test jacocoTestReport --no-daemon
+      # 6. Сборка и тесты с JaCoCo (если форматирование прошло)
+      - name: Build and run tests with JaCoCo
+        run: ./gradlew clean build test jacocoTestReport --no-daemon
 
       # 7. Загружаем HTML-отчёт JaCoCo как артефакт
       - name: Upload JaCoCo coverage report
@@ -48,7 +48,3 @@ jobs:
           name: jacoco-report-${{ github.run_id }}
           path: build/reports/jacoco/test/html
           retention-days: 7
-
-      # 8. Финальная полная сборка (если требуется)
-      - name: Clean and full build
-        run: ./gradlew clean build --no-daemon

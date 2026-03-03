@@ -1,5 +1,8 @@
 package ru.mentee.power.crm.spring.controller;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,102 +16,94 @@ import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.service.LeadStatusService;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-
 @Controller
 public class LeadController {
-    private static final Logger log = LoggerFactory.getLogger(LeadController.class);
-    private final LeadService leadService;
-    private final LeadStatusService leadStatusService;
+  private static final Logger log = LoggerFactory.getLogger(LeadController.class);
+  private final LeadService leadService;
+  private final LeadStatusService leadStatusService;
 
-    public LeadController(LeadService leadService, LeadStatusService leadStatusService) {
-        this.leadService = leadService;
-        this.leadStatusService = leadStatusService;
+  public LeadController(LeadService leadService, LeadStatusService leadStatusService) {
+    this.leadService = leadService;
+    this.leadStatusService = leadStatusService;
+  }
+
+  @GetMapping("/leads/new")
+  public String showCreateForm(Model model) {
+    model.addAttribute("statuses", leadStatusService.findAllStatuses());
+    return "leads/create";
+  }
+
+  @PostMapping("/leads")
+  public String createLead(
+      @RequestParam String email, @RequestParam String company, @RequestParam LeadStatus status) {
+    Address address = new Address("-", "-", "-");
+    leadService.addLead(email, company, status, address, "-");
+    return "redirect:/leads";
+  }
+
+  @PostMapping("/lead")
+  public String createLeadFull(
+      @RequestParam String email,
+      @RequestParam String company,
+      @RequestParam LeadStatus status,
+      @RequestParam String phone,
+      @RequestParam String city,
+      @RequestParam String street,
+      @RequestParam String zip) {
+    Address address = new Address(city, street, zip);
+    leadService.addLead(email, company, status, address, phone);
+    return "redirect:/leads";
+  }
+
+  @GetMapping("/leads")
+  public String showLeads(
+      @RequestParam(required = false) String search,
+      @RequestParam(required = false) String status,
+      Model model) {
+    List<Lead> leads = leadService.findLeads(search, status);
+    model.addAttribute("leads", leads);
+    model.addAttribute("search", search != null ? search : "");
+    model.addAttribute("status", status != null ? status : "");
+    return "leads/list";
+  }
+
+  @GetMapping("/leads/{id}/edit")
+  public String showEditForm(@PathVariable UUID id, Model model) {
+    Optional<Lead> optionalLead = leadService.findById(id);
+    Lead lead =
+        optionalLead.orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"));
+    model.addAttribute("lead", lead);
+    model.addAttribute("statuses", leadStatusService.findAllStatuses());
+    return "spring/edit";
+  }
+
+  @PostMapping("/leads/{id}")
+  public String updateLead(
+      @PathVariable UUID id,
+      @RequestParam String email,
+      @RequestParam(required = false) String phone,
+      @RequestParam String company,
+      @RequestParam LeadStatus status) {
+    String safePhone = (phone == null || phone.isBlank()) ? "-" : phone;
+    leadService.update(id, email, safePhone, company, status);
+    return "redirect:/leads";
+  }
+
+  @PostMapping("/leads/{id}/delete")
+  public String deleteLead(@PathVariable UUID id) {
+    leadService.delete(id);
+    return "redirect:/leads";
+  }
+
+  private static LeadStatus parseLeadStatus(String value) {
+    if (value == null || value.isBlank()) {
+      return LeadStatus.NEW;
     }
-
-    @GetMapping("/leads/new")
-    public String showCreateForm(Model model) {
-        model.addAttribute("statuses", leadStatusService.findAllStatuses());
-        return "leads/create";
+    try {
+      return LeadStatus.valueOf(value);
+    } catch (IllegalArgumentException e) {
+      return LeadStatus.NEW;
     }
-
-    @PostMapping("/leads")
-    public String createLead(
-            @RequestParam String email,
-            @RequestParam String company,
-            @RequestParam LeadStatus status) {
-        Address address = new Address("-", "-", "-");
-        leadService.addLead(email, company, status, address, "-");
-        return "redirect:/leads";
-    }
-
-    @PostMapping("/lead")
-    public String createLeadFull(
-            @RequestParam String email,
-            @RequestParam String company,
-            @RequestParam LeadStatus status,
-            @RequestParam String phone,
-            @RequestParam String city,
-            @RequestParam String street,
-            @RequestParam String zip) {
-        Address address = new Address(city, street, zip);
-        leadService.addLead(email, company, status, address, phone);
-        return "redirect:/leads";
-    }
-
-    @GetMapping("/leads")
-    public String showLeads(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String status,
-            Model model) {
-        List<Lead> leads = leadService.findLeads(search, status);
-        model.addAttribute("leads", leads);
-        model.addAttribute("search", search != null ? search : "");
-        model.addAttribute("status", status != null ? status : "");
-        return "leads/list";
-    }
-
-    @GetMapping("/leads/{id}/edit")
-    public String showEditForm(@PathVariable UUID id, Model model) {
-        Optional<Lead> optionalLead = leadService.findById(id);
-        Lead lead = optionalLead.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"));
-        model.addAttribute("lead", lead);
-        model.addAttribute("statuses", leadStatusService.findAllStatuses());
-        return "spring/edit";
-    }
-
-    @PostMapping("/leads/{id}")
-    public String updateLead(
-            @PathVariable UUID id,
-            @RequestParam String email,
-            @RequestParam(required = false) String phone,
-            @RequestParam String company,
-            @RequestParam LeadStatus status) {
-        String safePhone = (phone == null || phone.isBlank()) ? "-" : phone;
-        leadService.update(id, email, safePhone, company, status);
-        return "redirect:/leads";
-    }
-
-
-
-    @PostMapping("/leads/{id}/delete")
-    public String deleteLead(@PathVariable UUID id) {
-        leadService.delete(id);
-        return "redirect:/leads";
-    }
-
-    private static LeadStatus parseLeadStatus(String value) {
-        if (value == null || value.isBlank()) {
-            return LeadStatus.NEW;
-        }
-        try {
-            return LeadStatus.valueOf(value);
-        } catch (IllegalArgumentException e) {
-            return LeadStatus.NEW;
-        }
-    }
+  }
 }

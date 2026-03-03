@@ -18,8 +18,6 @@ import java.util.UUID;
 @Table(name = "deal_product")
 public class DealProduct {
 
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
