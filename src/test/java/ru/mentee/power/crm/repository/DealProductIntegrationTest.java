@@ -39,6 +39,7 @@ public class DealProductIntegrationTest {
   @Autowired private EntityManager entityManager;
 
   @Autowired private DataSource dataSource;
+
   @Test
   void testSaveDealWithProducts() {
     LeadEntity lead = new LeadEntity();
@@ -176,6 +177,7 @@ public class DealProductIntegrationTest {
             .toList();
     assertThat(skusWithGraph).containsExactlyInAnyOrderElementsOf(skusWithout);
   }
+
   @Test
   void testExplainAnalyzeDealWithProductsQuery() throws Exception {
     LeadEntity lead = new LeadEntity();
