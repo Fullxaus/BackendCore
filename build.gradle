@@ -87,7 +87,7 @@ checkstyle {
 
 spotless {
     java {
-        googleJavaFormat('1.17.0')
+        googleJavaFormat('1.19.2')
         target 'src/**/*.java'
     }
 }
