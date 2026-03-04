@@ -30,92 +30,127 @@ import ru.mentee.power.crm.spring.repository.ProductJpaRepository;
 @Transactional
 public class DealProductIntegrationTest {
 
-    @Autowired
-    private DealJpaRepository dealRepository;
+  @Autowired private DealJpaRepository dealRepository;
 
-    @Autowired
-    private ProductJpaRepository productRepository;
+  @Autowired private ProductJpaRepository productRepository;
 
-    @Autowired
-    private LeadRepository leadRepository;
+  @Autowired private LeadRepository leadRepository;
 
-    @Autowired
-    private EntityManager entityManager;
+  @Autowired private EntityManager entityManager;
 
-    @Autowired
-    private DataSource dataSource;
+  @Autowired private DataSource dataSource;
 
+  @Test
+  void testSaveDealWithProducts() {
+    LeadEntity lead = new LeadEntity();
+    lead.setEmail("deal-product-test@mail.ru");
+    lead.setPhone("+79991234567");
+    lead.setCompanyName("Test Company");
+    lead.setStatus("NEW");
+    lead.setCreatedAt(Instant.now());
+    lead = leadRepository.save(lead);
 
-    @Test
-    void testSaveDealWithProducts() {
-        LeadEntity lead = new LeadEntity();
-        lead.setEmail("deal-product-test@mail.ru");
-        lead.setPhone("+79991234567");
-        lead.setCompanyName("Test Company");
-        lead.setStatus("NEW");
-        lead.setCreatedAt(Instant.now());
-        lead = leadRepository.save(lead);
+    DealEntity deal = new DealEntity();
+    deal.setId(UUID.randomUUID());
+    deal.setLeadId(lead.getId());
+    deal.setAmount(new BigDecimal("150000"));
+    deal.setStatus("OPEN");
+    deal.setCreatedAt(Instant.now());
 
-        DealEntity deal = new DealEntity();
-        deal.setId(UUID.randomUUID());
-        deal.setLeadId(lead.getId());
-        deal.setAmount(new BigDecimal("150000"));
-        deal.setStatus("OPEN");
-        deal.setCreatedAt(Instant.now());
+    Product product1 = new Product();
+    product1.setName("Ноутбук Dell");
+    product1.setSku("LAPTOP-001");
+    product1.setPrice(new BigDecimal("90000"));
+    product1.setActive(true);
+    product1 = productRepository.save(product1);
 
-        Product product1 = new Product();
-        product1.setName("Ноутбук Dell");
-        product1.setSku("LAPTOP-001");
-        product1.setPrice(new BigDecimal("90000"));
-        product1.setActive(true);
-        product1 = productRepository.save(product1);
+    Product product2 = new Product();
+    product2.setName("Монитор LG");
+    product2.setSku("MONITOR-001");
+    product2.setPrice(new BigDecimal("25000"));
+    product2.setActive(true);
+    product2 = productRepository.save(product2);
 
-        Product product2 = new Product();
-        product2.setName("Монитор LG");
-        product2.setSku("MONITOR-001");
-        product2.setPrice(new BigDecimal("25000"));
-        product2.setActive(true);
-        product2 = productRepository.save(product2);
+    // AC: DealProduct(deal, product, quantity=3, unitPrice=81000) → связь в deal_product
+    DealProduct dealProduct1 = new DealProduct();
+    dealProduct1.setProduct(product1);
+    dealProduct1.setQuantity(3);
+    dealProduct1.setUnitPrice(new BigDecimal("81000"));
 
-        // AC: DealProduct(deal, product, quantity=3, unitPrice=81000) → связь в deal_product
-        DealProduct dealProduct1 = new DealProduct();
-        dealProduct1.setProduct(product1);
-        dealProduct1.setQuantity(3);
-        dealProduct1.setUnitPrice(new BigDecimal("81000"));
+    DealProduct dealProduct2 = new DealProduct();
+    dealProduct2.setProduct(product2);
+    dealProduct2.setQuantity(1);
+    dealProduct2.setUnitPrice(new BigDecimal("25000"));
 
-        DealProduct dealProduct2 = new DealProduct();
-        dealProduct2.setProduct(product2);
-        dealProduct2.setQuantity(1);
-        dealProduct2.setUnitPrice(new BigDecimal("25000"));
+    deal.addDealProduct(dealProduct1);
+    deal.addDealProduct(dealProduct2);
 
-        deal.addDealProduct(dealProduct1);
-        deal.addDealProduct(dealProduct2);
+    dealRepository.save(deal);
 
-        dealRepository.save(deal);
+    UUID dealId = deal.getId();
+    Optional<DealEntity> loaded = dealRepository.findById(dealId);
+    assertThat(loaded).isPresent();
+    DealEntity fromDb = loaded.get();
+    List<DealProduct> dealProducts = fromDb.getDealProducts();
+    assertThat(dealProducts).hasSize(2);
 
-        UUID dealId = deal.getId();
-        Optional<DealEntity> loaded = dealRepository.findById(dealId);
-        assertThat(loaded).isPresent();
-        DealEntity fromDb = loaded.get();
-        List<DealProduct> dealProducts = fromDb.getDealProducts();
-        assertThat(dealProducts).hasSize(2);
+    DealProduct first =
+        dealProducts.stream().filter(dp -> dp.getQuantity() == 3).findFirst().orElseThrow();
+    assertThat(first.getQuantity()).isEqualTo(3);
+    assertThat(first.getUnitPrice()).isEqualByComparingTo(new BigDecimal("81000"));
+    assertThat(first.getProduct()).isNotNull();
+    assertThat(first.getProduct().getSku()).isEqualTo("LAPTOP-001");
 
-        DealProduct first = dealProducts.stream()
-                .filter(dp -> dp.getQuantity() == 3)
-                .findFirst()
-                .orElseThrow();
-        assertThat(first.getQuantity()).isEqualTo(3);
-        assertThat(first.getUnitPrice()).isEqualByComparingTo(new BigDecimal("81000"));
-        assertThat(first.getProduct()).isNotNull();
-        assertThat(first.getProduct().getSku()).isEqualTo("LAPTOP-001");
+    DealProduct second =
+        dealProducts.stream().filter(dp -> dp.getQuantity() == 1).findFirst().orElseThrow();
+    assertThat(second.getQuantity()).isEqualTo(1);
+    assertThat(second.getUnitPrice()).isEqualByComparingTo(new BigDecimal("25000"));
+    assertThat(second.getProduct().getSku()).isEqualTo("MONITOR-001");
+  }
 
-        DealProduct second = dealProducts.stream()
-                .filter(dp -> dp.getQuantity() == 1)
-                .findFirst()
-                .orElseThrow();
-        assertThat(second.getQuantity()).isEqualTo(1);
-        assertThat(second.getUnitPrice()).isEqualByComparingTo(new BigDecimal("25000"));
-        assertThat(second.getProduct().getSku()).isEqualTo("MONITOR-001");
+  @Test
+  void testEntityGraphSolvesNPlusOne() {
+    LeadEntity lead = new LeadEntity();
+    lead.setEmail("nplusone-test@mail.ru");
+    lead.setPhone("+79997654321");
+    lead.setCompanyName("N+1 Company");
+    lead.setStatus("NEW");
+    lead.setCreatedAt(Instant.now());
+    lead = leadRepository.save(lead);
+
+    DealEntity deal = new DealEntity();
+    deal.setId(UUID.randomUUID());
+    deal.setLeadId(lead.getId());
+    deal.setAmount(new BigDecimal("200000"));
+    deal.setStatus("OPEN");
+    deal.setCreatedAt(Instant.now());
+
+    for (int i = 1; i <= 3; i++) {
+      Product p = new Product();
+      p.setName("Product " + i);
+      p.setSku("SKU-" + i);
+      p.setPrice(new BigDecimal(10000 * i));
+      p.setActive(true);
+      p = productRepository.save(p);
+      DealProduct dp = new DealProduct();
+      dp.setProduct(p);
+      dp.setQuantity(i);
+      dp.setUnitPrice(new BigDecimal(9000 * i));
+      deal.addDealProduct(dp);
+    }
+    dealRepository.saveAndFlush(deal);
+    UUID dealId = deal.getId();
+
+    entityManager.clear();
+
+    Optional<DealEntity> withGraph = dealRepository.findDealWithProducts(dealId);
+    assertThat(withGraph).as("findDealWithProducts should find deal %s", dealId).isPresent();
+    DealEntity loadedWithGraph = withGraph.get();
+    List<DealProduct> listWithGraph = loadedWithGraph.getDealProducts();
+    assertThat(listWithGraph).hasSize(3);
+    for (DealProduct dp : listWithGraph) {
+      assertThat(dp.getProduct()).isNotNull();
+      assertThat(dp.getProduct().getName()).isNotBlank();
     }
 
     entityManager.clear();
@@ -130,6 +165,49 @@ public class DealProductIntegrationTest {
       assertThat(dp.getProduct().getName()).isNotBlank();
     }
 
+    List<String> skusWithGraph =
+        loadedWithGraph.getDealProducts().stream()
+            .map(dp -> dp.getProduct().getSku())
+            .sorted()
+            .toList();
+    List<String> skusWithout =
+        loadedWithout.getDealProducts().stream()
+            .map(dp -> dp.getProduct().getSku())
+            .sorted()
+            .toList();
+    assertThat(skusWithGraph).containsExactlyInAnyOrderElementsOf(skusWithout);
+  }
+
+  @Test
+  void testExplainAnalyzeDealWithProductsQuery() throws Exception {
+    LeadEntity lead = new LeadEntity();
+    lead.setEmail("explain-analyze@mail.ru");
+    lead.setPhone("+79990000000");
+    lead.setCompanyName("Explain Co");
+    lead.setStatus("NEW");
+    lead.setCreatedAt(Instant.now());
+    lead = leadRepository.save(lead);
+
+    DealEntity deal = new DealEntity();
+    deal.setId(UUID.randomUUID());
+    deal.setLeadId(lead.getId());
+    deal.setAmount(new BigDecimal("100000"));
+    deal.setStatus("OPEN");
+    deal.setCreatedAt(Instant.now());
+
+    Product p = new Product();
+    p.setName("Product");
+    p.setSku("EXPLAIN-SKU");
+    p.setPrice(BigDecimal.TEN);
+    p.setActive(true);
+    p = productRepository.save(p);
+    DealProduct dp = new DealProduct();
+    dp.setProduct(p);
+    dp.setQuantity(1);
+    dp.setUnitPrice(BigDecimal.TEN);
+    deal.addDealProduct(dp);
+    dealRepository.saveAndFlush(deal);
+    entityManager.clear();
 
     @Test
     void testExplainAnalyzeDealWithProductsQuery() throws Exception {
