@@ -22,7 +22,7 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest
 @TestPropertySource(properties = "email.validation.base-url=http://localhost:8089")
 @Disabled("WireMock Jetty server is not available on current Java runtime; kept for reference")
-class EmailValidationClientWireMockTest {
+public class EmailValidationClientWireMockTest {
 
   private static WireMockServer wireMockServer;
 

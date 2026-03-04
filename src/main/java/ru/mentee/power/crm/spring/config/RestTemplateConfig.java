@@ -9,7 +9,7 @@ public class RestTemplateConfig {
 
   @Bean
   public RestTemplate restTemplate() {
-    // TODO: при наличии RestTemplateBuilder — setConnectTimeout(5s), setReadTimeout(10s)
+
     return new RestTemplate();
   }
 }

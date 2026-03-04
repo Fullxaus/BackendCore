@@ -1,7 +1,4 @@
-# Profile: dev — PostgreSQL (Docker)
-# Схема БД управляется Liquibase (db/changelog). schema.sql не выполняется.
-# ddl-auto: update — резерв: Hibernate создаёт недостающие таблицы (например deal_product),
-# если Liquibase ещё не применил миграции к этой БД.
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/crm_db

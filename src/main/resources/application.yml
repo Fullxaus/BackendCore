@@ -15,7 +15,6 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   jpa:
     show-sql: true
-  # Jackson: Spring Boot 4 использует Jackson 3; write-dates-as-timestamps удалён (по умолчанию ISO-8601).
   jackson:
     default-property-inclusion: non_null
     serialization:

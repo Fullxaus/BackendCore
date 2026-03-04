@@ -16,7 +16,8 @@ public class EmailValidationClient {
   private final String baseUrl;
 
   public EmailValidationClient(
-      RestTemplate restTemplate, @Value("${email.validation.base-url}") String baseUrl) {
+      RestTemplate restTemplate,
+      @Value("${email.validation.base-url}") String baseUrl) {
     this.restTemplate = restTemplate;
     this.baseUrl = baseUrl;
   }
