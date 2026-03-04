@@ -70,5 +70,4 @@ public class LeadRestController {
     String combined = (first + " " + last).trim();
     return combined.isEmpty() ? "-" : combined;
   }
-
 }
