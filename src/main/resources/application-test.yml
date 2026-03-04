@@ -1,4 +1,8 @@
 # Profile: test — H2 in-memory (для @DataJpaTest срез создаёт схему через Hibernate)
+email:
+  validation:
+    base-url: http://localhost:8089
+
 spring:
   liquibase:
     enabled: false
