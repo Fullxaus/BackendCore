@@ -6,12 +6,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ConfigDebug implements CommandLineRunner {
-    @Value("${gg.jte.templateLocation:NOT_SET}")
-    String loc;
+  @Value("${gg.jte.templateLocation:NOT_SET}")
+  String loc;
 
-
-    @Override
-    public void run(String... args) {
-        System.out.println("GG.JTE.TEMPLATELOCATION=" + loc);
-    }
+  @Override
+  public void run(String... args) {
+    System.out.println("GG.JTE.TEMPLATELOCATION=" + loc);
+  }
 }

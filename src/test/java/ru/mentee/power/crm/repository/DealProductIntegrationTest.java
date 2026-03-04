@@ -1,17 +1,8 @@
 package ru.mentee.power.crm.repository;
 
-import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-import ru.mentee.power.crm.entity.DealEntity;
-import ru.mentee.power.crm.entity.DealProduct;
-import ru.mentee.power.crm.entity.LeadEntity;
-import ru.mentee.power.crm.domain.Product;
-import ru.mentee.power.crm.spring.repository.ProductJpaRepository;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.sql.DataSource;
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,8 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.sql.DataSource;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import ru.mentee.power.crm.domain.Product;
+import ru.mentee.power.crm.entity.DealEntity;
+import ru.mentee.power.crm.entity.DealProduct;
+import ru.mentee.power.crm.entity.LeadEntity;
+import ru.mentee.power.crm.spring.repository.ProductJpaRepository;
 
 @SpringBootTest
 @Transactional
@@ -119,72 +118,16 @@ public class DealProductIntegrationTest {
         assertThat(second.getProduct().getSku()).isEqualTo("MONITOR-001");
     }
 
-    @Test
-    void testEntityGraphSolvesNPlusOne() {
-        LeadEntity lead = new LeadEntity();
-        lead.setEmail("nplusone-test@mail.ru");
-        lead.setPhone("+79997654321");
-        lead.setCompanyName("N+1 Company");
-        lead.setStatus("NEW");
-        lead.setCreatedAt(Instant.now());
-        lead = leadRepository.save(lead);
+    entityManager.clear();
 
-        DealEntity deal = new DealEntity();
-        deal.setId(UUID.randomUUID());
-        deal.setLeadId(lead.getId());
-        deal.setAmount(new BigDecimal("200000"));
-        deal.setStatus("OPEN");
-        deal.setCreatedAt(Instant.now());
-
-        for (int i = 1; i <= 3; i++) {
-            Product p = new Product();
-            p.setName("Product " + i);
-            p.setSku("SKU-" + i);
-            p.setPrice(new BigDecimal(10000 * i));
-            p.setActive(true);
-            p = productRepository.save(p);
-            DealProduct dp = new DealProduct();
-            dp.setProduct(p);
-            dp.setQuantity(i);
-            dp.setUnitPrice(new BigDecimal(9000 * i));
-            deal.addDealProduct(dp);
-        }
-        dealRepository.saveAndFlush(deal);
-        UUID dealId = deal.getId();
-
-        entityManager.clear();
-
-        Optional<DealEntity> withGraph = dealRepository.findDealWithProducts(dealId);
-        assertThat(withGraph).as("findDealWithProducts should find deal %s", dealId).isPresent();
-        DealEntity loadedWithGraph = withGraph.get();
-        List<DealProduct> listWithGraph = loadedWithGraph.getDealProducts();
-        assertThat(listWithGraph).hasSize(3);
-        for (DealProduct dp : listWithGraph) {
-            assertThat(dp.getProduct()).isNotNull();
-            assertThat(dp.getProduct().getName()).isNotBlank();
-        }
-
-        entityManager.clear();
-
-        Optional<DealEntity> withoutGraph = dealRepository.findById(dealId);
-        assertThat(withoutGraph).isPresent();
-        DealEntity loadedWithout = withoutGraph.get();
-        List<DealProduct> listWithout = loadedWithout.getDealProducts();
-        assertThat(listWithout).hasSize(3);
-        for (DealProduct dp : listWithout) {
-            assertThat(dp.getProduct()).isNotNull();
-            assertThat(dp.getProduct().getName()).isNotBlank();
-        }
-
-        List<String> skusWithGraph = loadedWithGraph.getDealProducts().stream()
-                .map(dp -> dp.getProduct().getSku())
-                .sorted()
-                .toList();
-        List<String> skusWithout = loadedWithout.getDealProducts().stream()
-                .map(dp -> dp.getProduct().getSku())
-                .sorted()
-                .toList();
-        assertThat(skusWithGraph).containsExactlyInAnyOrderElementsOf(skusWithout);
+    Optional<DealEntity> withoutGraph = dealRepository.findById(dealId);
+    assertThat(withoutGraph).isPresent();
+    DealEntity loadedWithout = withoutGraph.get();
+    List<DealProduct> listWithout = loadedWithout.getDealProducts();
+    assertThat(listWithout).hasSize(3);
+    for (DealProduct dp : listWithout) {
+      assertThat(dp.getProduct()).isNotNull();
+      assertThat(dp.getProduct().getName()).isNotBlank();
     }
 
 
@@ -251,4 +194,9 @@ public class DealProductIntegrationTest {
         Path outFile = outDir.resolve("explain-analyze-deal-products.txt");
         Files.write(outFile, lines);
     }
+    Path outDir = Paths.get(System.getProperty("user.dir", "."), "build");
+    Files.createDirectories(outDir);
+    Path outFile = outDir.resolve("explain-analyze-deal-products.txt");
+    Files.write(outFile, lines);
+  }
 }

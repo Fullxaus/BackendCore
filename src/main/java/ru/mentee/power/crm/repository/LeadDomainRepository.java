@@ -1,34 +1,33 @@
 package ru.mentee.power.crm.repository;
 
-import ru.mentee.power.crm.model.Lead;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import ru.mentee.power.crm.model.Lead;
 
 /**
- * Доменный интерфейс репозитория для работы с Lead (domain model).
- * Используется для абстракции над различными реализациями (InMemory, JPA).
+ * Доменный интерфейс репозитория для работы с Lead (domain model). Используется для абстракции над
+ * различными реализациями (InMemory, JPA).
  */
 public interface LeadDomainRepository {
 
-    void save(Lead lead);
+  void save(Lead lead);
 
-    Lead findById(UUID id);
+  Lead findById(UUID id);
 
-    /**
-     * Поиск лида по ID с пессимистической блокировкой (FOR UPDATE).
-     * Для критической операции конверсии Lead → Deal.
-     */
-    Lead findByIdForUpdate(UUID id);
+  /**
+   * Поиск лида по ID с пессимистической блокировкой (FOR UPDATE). Для критической операции
+   * конверсии Lead → Deal.
+   */
+  Lead findByIdForUpdate(UUID id);
 
-    List<Lead> findAll();
+  List<Lead> findAll();
 
-    void delete(UUID id);
+  void delete(UUID id);
 
-    Optional<Lead> findByEmail(String email);
+  Optional<Lead> findByEmail(String email);
 
-    default int size() {
-        return findAll().size();
-    }
+  default int size() {
+    return findAll().size();
+  }
 }
