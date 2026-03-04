@@ -15,9 +15,17 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
   jpa:
     show-sql: true
-  # Datasource and JPA are in application-dev.yml (PostgreSQL) and application-test.yml (H2)
-  # Для запуска с PostgreSQL используйте: --spring.profiles.active=dev
-  # Для запуска без профиля будет использоваться InMemoryLeadRepository
+  # Jackson: Spring Boot 4 использует Jackson 3; write-dates-as-timestamps удалён (по умолчанию ISO-8601).
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      indent-output: true
+    deserialization:
+      fail-on-unknown-properties: false
+
+email:
+  validation:
+    base-url: ${EMAIL_VALIDATION_URL:http://localhost:8089}
 
 gg:
   jte:
