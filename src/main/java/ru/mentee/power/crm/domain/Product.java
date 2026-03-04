@@ -11,7 +11,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import ru.mentee.power.crm.entity.DealProduct;
 
 @Data
 @NoArgsConstructor
@@ -21,18 +25,21 @@ import java.util.UUID;
 @Table(name = "products")
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @Column(nullable = false, unique = true, length = 100)
-    private String sku;
+  @Column(nullable = false, unique = true, length = 100)
+  private String sku;
 
-    @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal price;
+  @Column(nullable = false, precision = 19, scale = 2)
+  private BigDecimal price;
+
+  @Column(nullable = false)
+  private Boolean active = true;
 
     @Column(nullable = false)
     private Boolean active = true;
