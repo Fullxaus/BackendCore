@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FieldDemoService {
 
-    public String getStatus() {
-        return "FIELD_INJECTED";
-    }
+  public String getStatus() {
+    return "FIELD_INJECTED";
+  }
 }

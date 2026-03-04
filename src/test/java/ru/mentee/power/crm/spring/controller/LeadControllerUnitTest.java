@@ -1,5 +1,17 @@
 package ru.mentee.power.crm.spring.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,164 +28,157 @@ import ru.mentee.power.crm.service.LeadService;
 import ru.mentee.power.crm.service.LeadStatusService;
 import ru.mentee.power.crm.spring.MockLeadService;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 public class LeadControllerUnitTest {
 
-    @Mock
-    private LeadService mockLeadService;
+  @Mock private LeadService mockLeadService;
 
-    @Mock
-    private LeadStatusService mockLeadStatusService;
+  @Mock private LeadStatusService mockLeadStatusService;
 
-    @Mock
-    private Model model;
+  @Mock private Model model;
 
-    private LeadController controller;
+  private LeadController controller;
 
-    @BeforeEach
-    void setUp() {
-        lenient().when(mockLeadStatusService.findAllStatuses()).thenReturn(Arrays.asList(LeadStatus.values()));
-        controller = new LeadController(mockLeadService, mockLeadStatusService);
-    }
+  @BeforeEach
+  void setUp() {
+    lenient()
+        .when(mockLeadStatusService.findAllStatuses())
+        .thenReturn(Arrays.asList(LeadStatus.values()));
+    controller = new LeadController(mockLeadService, mockLeadStatusService);
+  }
 
-    @Test
-    void shouldCreateControllerWithoutSpringContainer() {
-        assertThat(controller).isNotNull();
-    }
+  @Test
+  void shouldCreateControllerWithoutSpringContainer() {
+    assertThat(controller).isNotNull();
+  }
 
-    @Test
-    void shouldWorkWithMockLeadServiceFromFactory() {
-        LeadService mockService = MockLeadService.create();
-        LeadStatusService statusService = org.mockito.Mockito.mock(LeadStatusService.class);
-        lenient().when(statusService.findAllStatuses()).thenReturn(Arrays.asList(LeadStatus.values()));
-        LeadController controllerWithMock = new LeadController(mockService, statusService);
-        assertThat(controllerWithMock).isNotNull();
-    }
+  @Test
+  void shouldWorkWithMockLeadServiceFromFactory() {
+    LeadService mockService = MockLeadService.create();
+    LeadStatusService statusService = org.mockito.Mockito.mock(LeadStatusService.class);
+    lenient().when(statusService.findAllStatuses()).thenReturn(Arrays.asList(LeadStatus.values()));
+    LeadController controllerWithMock = new LeadController(mockService, statusService);
+    assertThat(controllerWithMock).isNotNull();
+  }
 
-    @Test
-    void shouldDelegateShowLeadsToService_whenNoFilter() {
-        when(mockLeadService.findLeads(null, null)).thenReturn(Collections.emptyList());
+  @Test
+  void shouldDelegateShowLeadsToService_whenNoFilter() {
+    when(mockLeadService.findLeads(null, null)).thenReturn(Collections.emptyList());
 
-        String viewName = controller.showLeads(null, null, model);
+    String viewName = controller.showLeads(null, null, model);
 
-        verify(mockLeadService).findLeads(null, null);
-        verify(model).addAttribute(eq("leads"), any());
-        verify(model).addAttribute("search", "");
-        verify(model).addAttribute("status", "");
-        assertThat(viewName).isEqualTo("leads/list");
-    }
+    verify(mockLeadService).findLeads(null, null);
+    verify(model).addAttribute(eq("leads"), any());
+    verify(model).addAttribute("search", "");
+    verify(model).addAttribute("status", "");
+    assertThat(viewName).isEqualTo("leads/list");
+  }
 
-    @Test
-    void shouldDelegateShowLeadsToService_whenSearchAndStatusFilter() {
-        when(mockLeadService.findLeads("test", "NEW")).thenReturn(Collections.emptyList());
+  @Test
+  void shouldDelegateShowLeadsToService_whenSearchAndStatusFilter() {
+    when(mockLeadService.findLeads("test", "NEW")).thenReturn(Collections.emptyList());
 
-        String viewName = controller.showLeads("test", "NEW", model);
+    String viewName = controller.showLeads("test", "NEW", model);
 
-        verify(mockLeadService).findLeads("test", "NEW");
-        verify(model).addAttribute(eq("leads"), any());
-        verify(model).addAttribute("search", "test");
-        verify(model).addAttribute("status", "NEW");
-        assertThat(viewName).isEqualTo("leads/list");
-    }
+    verify(mockLeadService).findLeads("test", "NEW");
+    verify(model).addAttribute(eq("leads"), any());
+    verify(model).addAttribute("search", "test");
+    verify(model).addAttribute("status", "NEW");
+    assertThat(viewName).isEqualTo("leads/list");
+  }
 
-    @Test
-    void shouldReturnCreateFormView() {
-        String viewName = controller.showCreateForm(model);
+  @Test
+  void shouldReturnCreateFormView() {
+    String viewName = controller.showCreateForm(model);
 
-        verify(model).addAttribute(eq("statuses"), any());
-        assertThat(viewName).isEqualTo("leads/create");
-    }
+    verify(model).addAttribute(eq("statuses"), any());
+    assertThat(viewName).isEqualTo("leads/create");
+  }
 
-    @Test
-    void showEditForm_shouldReturnFormWithLeadData_whenLeadExists() {
-        UUID id = UUID.randomUUID();
-        Address address = new Address("City", "Street", "12345");
-        Contact contact = new Contact("test@example.com", "+7999", address);
-        Lead lead = new Lead(id, contact, "Acme", LeadStatus.NEW.name());
-        when(mockLeadService.findById(id)).thenReturn(Optional.of(lead));
+  @Test
+  void showEditForm_shouldReturnFormWithLeadData_whenLeadExists() {
+    UUID id = UUID.randomUUID();
+    Address address = new Address("City", "Street", "12345");
+    Contact contact = new Contact("test@example.com", "+7999", address);
+    Lead lead = new Lead(id, contact, "Acme", LeadStatus.NEW.name());
+    when(mockLeadService.findById(id)).thenReturn(Optional.of(lead));
 
-        String viewName = controller.showEditForm(id, model);
+    String viewName = controller.showEditForm(id, model);
 
-        verify(mockLeadService).findById(id);
-        verify(model).addAttribute(eq("lead"), any(Lead.class));
-        verify(model).addAttribute(eq("statuses"), any());
-        assertThat(viewName).isEqualTo("spring/edit");
-    }
+    verify(mockLeadService).findById(id);
+    verify(model).addAttribute(eq("lead"), any(Lead.class));
+    verify(model).addAttribute(eq("statuses"), any());
+    assertThat(viewName).isEqualTo("spring/edit");
+  }
 
-    @Test
-    void showEditForm_shouldThrow404_whenLeadNotFound() {
-        UUID nonexistentId = UUID.randomUUID();
-        when(mockLeadService.findById(nonexistentId)).thenReturn(Optional.empty());
+  @Test
+  void showEditForm_shouldThrow404_whenLeadNotFound() {
+    UUID nonexistentId = UUID.randomUUID();
+    when(mockLeadService.findById(nonexistentId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> controller.showEditForm(nonexistentId, model))
-                .isInstanceOf(ResponseStatusException.class)
-                .satisfies(ex -> {
-                    ResponseStatusException rse = (ResponseStatusException) ex;
-                    assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-                    assertThat(rse.getReason()).isEqualTo("Lead not found");
-                });
-    }
+    assertThatThrownBy(() -> controller.showEditForm(nonexistentId, model))
+        .isInstanceOf(ResponseStatusException.class)
+        .satisfies(
+            ex -> {
+              ResponseStatusException rse = (ResponseStatusException) ex;
+              assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+              assertThat(rse.getReason()).isEqualTo("Lead not found");
+            });
+  }
 
-    @Test
-    void updateLead_shouldCallServiceAndRedirect() {
-        UUID id = UUID.randomUUID();
-        when(mockLeadService.update(eq(id), eq("new@example.com"), eq("+7999"), eq("NewCo"), eq(LeadStatus.CONTACTED)))
-                .thenReturn(new Lead(id, new Contact("new@example.com", "+7999",
-                        new Address("City", "Street", "12345")), "NewCo", LeadStatus.CONTACTED.name()));
+  @Test
+  void updateLead_shouldCallServiceAndRedirect() {
+    UUID id = UUID.randomUUID();
+    when(mockLeadService.update(
+            eq(id), eq("new@example.com"), eq("+7999"), eq("NewCo"), eq(LeadStatus.CONTACTED)))
+        .thenReturn(
+            new Lead(
+                id,
+                new Contact("new@example.com", "+7999", new Address("City", "Street", "12345")),
+                "NewCo",
+                LeadStatus.CONTACTED.name()));
 
-        String viewName = controller.updateLead(id, "new@example.com", "+7999", "NewCo", LeadStatus.CONTACTED);
+    String viewName =
+        controller.updateLead(id, "new@example.com", "+7999", "NewCo", LeadStatus.CONTACTED);
 
-        verify(mockLeadService).update(id, "new@example.com", "+7999", "NewCo", LeadStatus.CONTACTED);
-        assertThat(viewName).isEqualTo("redirect:/leads");
-    }
+    verify(mockLeadService).update(id, "new@example.com", "+7999", "NewCo", LeadStatus.CONTACTED);
+    assertThat(viewName).isEqualTo("redirect:/leads");
+  }
 
+  @Test
+  void deleteLead_shouldCallServiceAndRedirect() {
+    UUID id = UUID.randomUUID();
 
+    String viewName = controller.deleteLead(id);
 
-    @Test
-    void deleteLead_shouldCallServiceAndRedirect() {
-        UUID id = UUID.randomUUID();
+    verify(mockLeadService).delete(id);
+    assertThat(viewName).isEqualTo("redirect:/leads");
+  }
 
-        String viewName = controller.deleteLead(id);
+  @Test
+  void deleteLead_shouldThrow404_whenLeadNotFound() {
+    UUID nonexistentId = UUID.randomUUID();
+    org.mockito.Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"))
+        .when(mockLeadService)
+        .delete(nonexistentId);
 
-        verify(mockLeadService).delete(id);
-        assertThat(viewName).isEqualTo("redirect:/leads");
-    }
+    assertThatThrownBy(() -> controller.deleteLead(nonexistentId))
+        .isInstanceOf(ResponseStatusException.class)
+        .satisfies(
+            ex -> {
+              ResponseStatusException rse = (ResponseStatusException) ex;
+              assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            });
+  }
 
+  // --- Создание лида ---
 
-    @Test
-    void deleteLead_shouldThrow404_whenLeadNotFound() {
-        UUID nonexistentId = UUID.randomUUID();
-        org.mockito.Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"))
-                .when(mockLeadService).delete(nonexistentId);
+  @Test
+  void postLeads_withValidData_redirectsToLeads() {
+    String viewName = controller.createLead("valid@test.com", "Иван", LeadStatus.NEW);
 
-        assertThatThrownBy(() -> controller.deleteLead(nonexistentId))
-                .isInstanceOf(ResponseStatusException.class)
-                .satisfies(ex -> {
-                    ResponseStatusException rse = (ResponseStatusException) ex;
-                    assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-                });
-    }
-
-    // --- Создание лида ---
-
-    @Test
-    void postLeads_withValidData_redirectsToLeads() {
-        String viewName = controller.createLead("valid@test.com", "Иван", LeadStatus.NEW);
-
-        assertThat(viewName).isEqualTo("redirect:/leads");
-        verify(mockLeadService).addLead(eq("valid@test.com"), eq("Иван"), eq(LeadStatus.NEW), any(Address.class), eq("-"));
-    }
+    assertThat(viewName).isEqualTo("redirect:/leads");
+    verify(mockLeadService)
+        .addLead(eq("valid@test.com"), eq("Иван"), eq(LeadStatus.NEW), any(Address.class), eq("-"));
+  }
 }
