@@ -210,31 +210,68 @@ public class DealProductIntegrationTest {
     dealRepository.saveAndFlush(deal);
     entityManager.clear();
 
-    UUID dealId = deal.getId();
-    String explainQuery =
-        "EXPLAIN ANALYZE SELECT de1_0.id, de1_0.amount, de1_0.created_at, de1_0.lead_id, de1_0.status, "
-            + "dp1_0.deal_id, dp1_0.id AS dp_id, dp1_0.product_id, dp1_0.quantity, dp1_0.unit_price "
-            + "FROM deals de1_0 LEFT JOIN deal_product dp1_0 ON de1_0.id = dp1_0.deal_id WHERE de1_0.id = ?";
+    @Test
+    void testExplainAnalyzeDealWithProductsQuery() throws Exception {
+        LeadEntity lead = new LeadEntity();
+        lead.setEmail("explain-analyze@mail.ru");
+        lead.setPhone("+79990000000");
+        lead.setCompanyName("Explain Co");
+        lead.setStatus("NEW");
+        lead.setCreatedAt(Instant.now());
+        lead = leadRepository.save(lead);
 
-    List<String> lines = new ArrayList<>();
-    lines.add("EXPLAIN ANALYZE result for Deal with Products (EntityGraph JOIN query)");
-    lines.add("Query: " + explainQuery.replace("?", dealId.toString()));
-    lines.add("");
+        DealEntity deal = new DealEntity();
+        deal.setId(UUID.randomUUID());
+        deal.setLeadId(lead.getId());
+        deal.setAmount(new BigDecimal("100000"));
+        deal.setStatus("OPEN");
+        deal.setCreatedAt(Instant.now());
 
-    try (Connection conn = dataSource.getConnection();
-        PreparedStatement ps = conn.prepareStatement(explainQuery)) {
-      ps.setObject(1, dealId);
-      try (ResultSet rs = ps.executeQuery()) {
-        int colCount = rs.getMetaData().getColumnCount();
-        while (rs.next()) {
-          StringBuilder row = new StringBuilder();
-          for (int i = 1; i <= colCount; i++) {
-            if (i > 1) row.append(" | ");
-            row.append(rs.getString(i));
-          }
-          lines.add(row.toString());
+        Product p = new Product();
+        p.setName("Product");
+        p.setSku("EXPLAIN-SKU");
+        p.setPrice(BigDecimal.TEN);
+        p.setActive(true);
+        p = productRepository.save(p);
+        DealProduct dp = new DealProduct();
+        dp.setProduct(p);
+        dp.setQuantity(1);
+        dp.setUnitPrice(BigDecimal.TEN);
+        deal.addDealProduct(dp);
+        dealRepository.saveAndFlush(deal);
+        entityManager.clear();
+
+        UUID dealId = deal.getId();
+        String explainQuery = "EXPLAIN ANALYZE SELECT de1_0.id, de1_0.amount, de1_0.created_at, de1_0.lead_id, de1_0.status, "
+                + "dp1_0.deal_id, dp1_0.id AS dp_id, dp1_0.product_id, dp1_0.quantity, dp1_0.unit_price "
+                + "FROM deals de1_0 LEFT JOIN deal_product dp1_0 ON de1_0.id = dp1_0.deal_id WHERE de1_0.id = ?";
+
+        List<String> lines = new ArrayList<>();
+        lines.add("EXPLAIN ANALYZE result for Deal with Products (EntityGraph JOIN query)");
+        lines.add("Query: " + explainQuery.replace("?", dealId.toString()));
+        lines.add("");
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(explainQuery)) {
+            ps.setObject(1, dealId);
+            try (ResultSet rs = ps.executeQuery()) {
+                int colCount = rs.getMetaData().getColumnCount();
+                while (rs.next()) {
+                    StringBuilder row = new StringBuilder();
+                    for (int i = 1; i <= colCount; i++) {
+                        if (i > 1) row.append(" | ");
+                        row.append(rs.getString(i));
+                    }
+                    lines.add(row.toString());
+                }
+            }
         }
-      }
+
+
+        Path outDir = Paths.get(System.getProperty("user.dir", "."), "build");
+        Files.createDirectories(outDir);
+        Path outFile = outDir.resolve("explain-analyze-deal-products.txt");
+        Files.write(outFile, lines);
     }
     Path outDir = Paths.get(System.getProperty("user.dir", "."), "build");
     Files.createDirectories(outDir);
