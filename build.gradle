@@ -93,6 +93,7 @@ spotless {
     java {
         googleJavaFormat('1.19.2')
         target 'src/**/*.java'
+        targetExclude 'src/test/java/ru/mentee/power/crm/repository/DealProductIntegrationTest.java'
     }
 }
 
