@@ -1,0 +1,15 @@
+# Тестовый профиль: H2 in-memory для @SpringBootTest
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+
+email:
+  validation:
+    base-url: http://localhost:8089

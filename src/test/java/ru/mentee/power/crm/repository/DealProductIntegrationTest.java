@@ -28,6 +28,7 @@ import ru.mentee.power.crm.spring.repository.ProductJpaRepository;
 
 @SpringBootTest
 @Transactional
+@org.springframework.test.context.ActiveProfiles("test")
 public class DealProductIntegrationTest {
 
   @Autowired private DealJpaRepository dealRepository;
