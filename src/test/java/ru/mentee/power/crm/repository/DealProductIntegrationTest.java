@@ -42,9 +42,7 @@ public class DealProductIntegrationTest {
   @Autowired private DataSource dataSource;
 
   private static final String EXPLAIN_DEAL_PRODUCTS_SQL =
-      "EXPLAIN ANALYZE SELECT de1_0.id, de1_0.amount, de1_0.created_at, de1_0.lead_id, de1_0.status,"
-          + " dp1_0.deal_id, dp1_0.id AS dp_id, dp1_0.product_id, dp1_0.quantity, dp1_0.unit_price"
-          + " FROM deals de1_0 LEFT JOIN deal_product dp1_0 ON de1_0.id = dp1_0.deal_id WHERE de1_0.id = ?";
+      "EXPLAIN ANALYZE SELECT de1_0.id, de1_0.amount, de1_0.created_at, de1_0.lead_id, de1_0.status, dp1_0.deal_id, dp1_0.id AS dp_id, dp1_0.product_id, dp1_0.quantity, dp1_0.unit_price FROM deals de1_0 LEFT JOIN deal_product dp1_0 ON de1_0.id = dp1_0.deal_id WHERE de1_0.id = ?";
 
   @Test
   void testSaveDealWithProducts() {
