@@ -238,7 +238,12 @@ public class DealProductIntegrationTest {
           }
           lines.add(row.toString());
         }
-      }
+
+
+        Path outDir = Paths.get(System.getProperty("user.dir", "."), "build");
+        Files.createDirectories(outDir);
+        Path outFile = outDir.resolve("explain-analyze-deal-products.txt");
+        Files.write(outFile, lines);
     }
     Path outDir = Paths.get(System.getProperty("user.dir", "."), "build");
     Files.createDirectories(outDir);
