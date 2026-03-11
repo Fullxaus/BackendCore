@@ -41,6 +41,11 @@ public class DealProductIntegrationTest {
 
   @Autowired private DataSource dataSource;
 
+  private static final String EXPLAIN_DEAL_PRODUCTS_SQL =
+      "EXPLAIN ANALYZE SELECT de1_0.id, de1_0.amount, de1_0.created_at, de1_0.lead_id, de1_0.status,"
+          + " dp1_0.deal_id, dp1_0.id AS dp_id, dp1_0.product_id, dp1_0.quantity, dp1_0.unit_price"
+          + " FROM deals de1_0 LEFT JOIN deal_product dp1_0 ON de1_0.id = dp1_0.deal_id WHERE de1_0.id = ?";
+
   @Test
   void testSaveDealWithProducts() {
     LeadEntity lead = new LeadEntity();
@@ -211,19 +216,14 @@ public class DealProductIntegrationTest {
     entityManager.clear();
 
     UUID dealId = deal.getId();
-    // One literal to satisfy google-java-format (no concatenation, no text block)
-    String explainQuery =
-        "EXPLAIN ANALYZE SELECT de1_0.id, de1_0.amount, de1_0.created_at, de1_0.lead_id, de1_0.status,"
-            + " dp1_0.deal_id, dp1_0.id AS dp_id, dp1_0.product_id, dp1_0.quantity, dp1_0.unit_price"
-            + " FROM deals de1_0 LEFT JOIN deal_product dp1_0 ON de1_0.id = dp1_0.deal_id WHERE de1_0.id = ?";
 
     List<String> lines = new ArrayList<>();
     lines.add("EXPLAIN ANALYZE result for Deal with Products (EntityGraph JOIN query)");
-    lines.add("Query: " + explainQuery.replace("?", dealId.toString()));
+    lines.add("Query: " + EXPLAIN_DEAL_PRODUCTS_SQL.replace("?", dealId.toString()));
     lines.add("");
 
     try (Connection conn = dataSource.getConnection();
-        PreparedStatement ps = conn.prepareStatement(explainQuery)) {
+        PreparedStatement ps = conn.prepareStatement(EXPLAIN_DEAL_PRODUCTS_SQL)) {
       ps.setObject(1, dealId);
       try (ResultSet rs = ps.executeQuery()) {
         int colCount = rs.getMetaData().getColumnCount();
