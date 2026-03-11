@@ -1,13 +1,16 @@
 package ru.mentee.power.crm.spring.rest;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +18,7 @@ import ru.mentee.power.crm.domain.Address;
 import ru.mentee.power.crm.model.Lead;
 import ru.mentee.power.crm.model.LeadStatus;
 import ru.mentee.power.crm.service.LeadService;
+import ru.mentee.power.crm.service.LeadValidationService;
 
 /**
  * REST-контроллер для работы с лидами (JSON API).
@@ -29,10 +33,11 @@ import ru.mentee.power.crm.service.LeadService;
 public class LeadRestController {
 
   private final LeadService leadService;
+  private final LeadValidationService leadValidationService;
 
   @GetMapping
-  public List<Lead> getAllLeads() {
-    return leadService.findAll();
+  public ResponseEntity<List<Lead>> getAllLeads() {
+    return ResponseEntity.ok(leadService.findAll());
   }
 
   @GetMapping("/{id}")
@@ -51,14 +56,35 @@ public class LeadRestController {
             request.street() != null ? request.street() : "-",
             request.zip() != null ? request.zip() : "-");
     String company = resolveCompany(request);
+    String phone = request.phone() != null ? request.phone() : "-";
     Lead lead =
-        leadService.addLead(
-            request.email(),
-            company,
-            status,
-            address,
-            request.phone() != null ? request.phone() : "-");
-    return ResponseEntity.ok(lead);
+        leadValidationService.createLeadWithValidation(
+            request.email(), company, status, address, phone);
+    URI location = URI.create("/api/leads/" + lead.id());
+    return ResponseEntity.created(location).body(lead);
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<Lead> updateLead(
+      @PathVariable UUID id, @RequestBody CreateLeadRequest request) {
+    LeadStatus status =
+        request.status() != null ? LeadStatus.valueOf(request.status()) : LeadStatus.NEW;
+    Address address =
+        new Address(
+            request.city() != null ? request.city() : "-",
+            request.street() != null ? request.street() : "-",
+            request.zip() != null ? request.zip() : "-");
+    String company = resolveCompany(request);
+    String phone = request.phone() != null ? request.phone() : "-";
+    Optional<Lead> updated = leadService.updateLead(id, request.email(), phone, company, status);
+    return updated.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteLead(@PathVariable UUID id) {
+    return leadService.deleteLead(id)
+        ? ResponseEntity.noContent().build()
+        : ResponseEntity.notFound().build();
   }
 
   private static String resolveCompany(CreateLeadRequest request) {

@@ -119,12 +119,43 @@ public class LeadService {
     return updated;
   }
 
+  /**
+   * Обновляет лида по ID. Для REST: возвращает Optional, чтобы контроллер мог отдать 404.
+   *
+   * @return Optional с обновлённым лидом или empty если не найден
+   */
+  public Optional<Lead> updateLead(
+      UUID id, String email, String phone, String company, LeadStatus status) {
+    Lead existing = repository.findById(id);
+    if (existing == null) {
+      return Optional.empty();
+    }
+    Address address = existing.contact().address();
+    Contact contact = new Contact(email, phone, address);
+    Lead updated = new Lead(id, contact, company, status.name());
+    repository.save(updated);
+    return Optional.of(updated);
+  }
+
   /** Удаляет лида по ID. Если лид не найден — выбрасывает ResponseStatusException(404). */
   public void delete(UUID id) {
     if (repository.findById(id) == null) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found");
     }
     repository.delete(id);
+  }
+
+  /**
+   * Удаляет лида по ID. Для REST: возвращает boolean, чтобы контроллер мог отдать 204 или 404.
+   *
+   * @return true если лид удалён, false если не найден
+   */
+  public boolean deleteLead(UUID id) {
+    if (repository.findById(id) == null) {
+      return false;
+    }
+    repository.delete(id);
+    return true;
   }
 
   /**
