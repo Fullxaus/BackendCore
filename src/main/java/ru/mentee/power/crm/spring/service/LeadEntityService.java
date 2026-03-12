@@ -3,6 +3,7 @@ package ru.mentee.power.crm.spring.service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,28 @@ public class LeadEntityService {
 
   public LeadEntityService(LeadRepository repository) {
     this.repository = repository;
+  }
+
+  // ========== Simple CRUD helpers for REST layer ==========
+
+  public List<LeadEntity> findAll() {
+    return repository.findAll();
+  }
+
+  public Optional<LeadEntity> findById(UUID id) {
+    return repository.findById(id);
+  }
+
+  public LeadEntity save(LeadEntity entity) {
+    return repository.save(entity);
+  }
+
+  public boolean existsById(UUID id) {
+    return repository.existsById(id);
+  }
+
+  public void deleteById(UUID id) {
+    repository.deleteById(id);
   }
 
   // ========== Derived Methods ==========

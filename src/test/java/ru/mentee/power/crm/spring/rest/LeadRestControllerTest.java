@@ -47,7 +47,7 @@ class LeadRestControllerTest {
   void shouldReturn201WithLocation_whenCreateLead() throws Exception {
     String json =
         """
-        {"email":"rest-test-create@example.com","firstName":"John","lastName":"Doe","status":"NEW","phone":"+70000000000","city":"M","street":"S","zip":"1"}
+        {"email":"rest-test-create@example.com","firstName":"John","lastName":"Doe","company":"Acme"}
         """;
 
     String location =
@@ -72,7 +72,7 @@ class LeadRestControllerTest {
     UUID id = UUID.randomUUID();
     String json =
         """
-        {"email":"updated@example.com","firstName":"Jane","lastName":"Smith","company":"Updated Corp","status":"NEW","phone":"+70000000001","city":"M","street":"S","zip":"1"}
+        {"email":"updated@example.com","firstName":"Jane","lastName":"Smith","company":"Updated Corp"}
         """;
 
     mockMvc()

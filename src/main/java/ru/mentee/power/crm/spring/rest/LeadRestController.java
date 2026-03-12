@@ -1,8 +1,9 @@
 package ru.mentee.power.crm.spring.rest;
 
+import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,86 +15,68 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.mentee.power.crm.domain.Address;
-import ru.mentee.power.crm.model.Lead;
-import ru.mentee.power.crm.model.LeadStatus;
-import ru.mentee.power.crm.service.LeadService;
-import ru.mentee.power.crm.service.LeadValidationService;
+import ru.mentee.power.crm.entity.LeadEntity;
+import ru.mentee.power.crm.spring.dto.CreateLeadRequest;
+import ru.mentee.power.crm.spring.dto.LeadResponse;
+import ru.mentee.power.crm.spring.dto.UpdateLeadRequest;
+import ru.mentee.power.crm.spring.mapper.LeadMapper;
+import ru.mentee.power.crm.spring.service.LeadEntityService;
 
-/**
- * REST-контроллер для работы с лидами (JSON API).
- *
- * <p>В отличие от {@link ru.mentee.power.crm.spring.controller.LeadController} (JTE/HTML): здесь
- * методы возвращают {@link Lead} / {@link java.util.List}{@code <Lead>} — Spring сериализует их в
- * JSON (Content-Type: application/json). LeadController возвращает {@link String} (имя view).
- */
 @RestController
 @RequestMapping("/api/leads")
 @RequiredArgsConstructor
 public class LeadRestController {
 
-  private final LeadService leadService;
-  private final LeadValidationService leadValidationService;
+  private final LeadEntityService leadEntityService;
+  private final LeadMapper leadMapper;
 
   @GetMapping
-  public ResponseEntity<List<Lead>> getAllLeads() {
-    return ResponseEntity.ok(leadService.findAll());
+  public ResponseEntity<List<LeadResponse>> getAllLeads() {
+    List<LeadResponse> responses =
+        leadEntityService.findAll().stream().map(leadMapper::toResponse).toList();
+    return ResponseEntity.ok(responses);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Lead> getLeadById(@PathVariable UUID id) {
-    Optional<Lead> lead = leadService.findById(id);
-    return lead.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+  public ResponseEntity<LeadResponse> getLeadById(@PathVariable UUID id) {
+    return leadEntityService
+        .findById(id)
+        .map(leadMapper::toResponse)
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  public ResponseEntity<Lead> createLead(@RequestBody CreateLeadRequest request) {
-    LeadStatus status =
-        request.status() != null ? LeadStatus.valueOf(request.status()) : LeadStatus.NEW;
-    Address address =
-        new Address(
-            request.city() != null ? request.city() : "-",
-            request.street() != null ? request.street() : "-",
-            request.zip() != null ? request.zip() : "-");
-    String company = resolveCompany(request);
-    String phone = request.phone() != null ? request.phone() : "-";
-    Lead lead =
-        leadValidationService.createLeadWithValidation(
-            request.email(), company, status, address, phone);
-    URI location = URI.create("/api/leads/" + lead.id());
-    return ResponseEntity.created(location).body(lead);
+  public ResponseEntity<LeadResponse> createLead(@Valid @RequestBody CreateLeadRequest request) {
+    LeadEntity entity = leadMapper.toEntity(request);
+    entity.setCreatedAt(Instant.now());
+    LeadEntity saved = leadEntityService.save(entity);
+    LeadResponse response = leadMapper.toResponse(saved);
+    URI location = URI.create("/api/leads/" + response.id());
+    return ResponseEntity.created(location).body(response);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Lead> updateLead(
-      @PathVariable UUID id, @RequestBody CreateLeadRequest request) {
-    LeadStatus status =
-        request.status() != null ? LeadStatus.valueOf(request.status()) : LeadStatus.NEW;
-    Address address =
-        new Address(
-            request.city() != null ? request.city() : "-",
-            request.street() != null ? request.street() : "-",
-            request.zip() != null ? request.zip() : "-");
-    String company = resolveCompany(request);
-    String phone = request.phone() != null ? request.phone() : "-";
-    Optional<Lead> updated = leadService.updateLead(id, request.email(), phone, company, status);
-    return updated.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+  public ResponseEntity<LeadResponse> updateLead(
+      @PathVariable UUID id, @Valid @RequestBody UpdateLeadRequest request) {
+    return leadEntityService
+        .findById(id)
+        .map(
+            entity -> {
+              leadMapper.updateEntity(request, entity);
+              LeadEntity saved = leadEntityService.save(entity);
+              LeadResponse response = leadMapper.toResponse(saved);
+              return ResponseEntity.ok(response);
+            })
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteLead(@PathVariable UUID id) {
-    return leadService.deleteLead(id)
-        ? ResponseEntity.noContent().build()
-        : ResponseEntity.notFound().build();
-  }
-
-  private static String resolveCompany(CreateLeadRequest request) {
-    if (request.company() != null && !request.company().isBlank()) {
-      return request.company();
+    if (!leadEntityService.existsById(id)) {
+      return ResponseEntity.notFound().build();
     }
-    String first = request.firstName() != null ? request.firstName() : "";
-    String last = request.lastName() != null ? request.lastName() : "";
-    String combined = (first + " " + last).trim();
-    return combined.isEmpty() ? "-" : combined;
+    leadEntityService.deleteById(id);
+    return ResponseEntity.noContent().build();
   }
 }
