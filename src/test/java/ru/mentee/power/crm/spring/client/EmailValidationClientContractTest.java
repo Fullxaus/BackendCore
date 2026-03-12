@@ -25,7 +25,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource(properties = "email.validation.base-url=http://localhost:8089")
-class EmailValidationClientContractTest {
+public class EmailValidationClientContractTest {
 
   private MockRestServiceServer mockServer;
 
