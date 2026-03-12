@@ -11,21 +11,20 @@ import jakarta.validation.constraints.Size;
  */
 public class CreateLeadRequest {
 
-  @NotBlank
-  @Email
+  @NotBlank(message = "Email обязателен")
+  @Email(message = "Email должен быть в корректном формате")
   @Size(max = 255)
   private String email;
 
-  @NotBlank
-  @Size(max = 100)
+  @NotBlank(message = "Имя обязательно")
+  @Size(min = 2, max = 50, message = "Имя должно быть от 2 до 50 символов")
   private String firstName;
 
-  @NotBlank
-  @Size(max = 100)
+  @NotBlank(message = "Фамилия обязательна")
+  @Size(min = 2, max = 50, message = "Фамилия должна быть от 2 до 50 символов")
   private String lastName;
 
-  @NotBlank
-  @Size(max = 255)
+  @Size(max = 100, message = "Название компании не должно превышать 100 символов")
   private String company;
 
   public CreateLeadRequest(String email, String firstName, String lastName, String company) {

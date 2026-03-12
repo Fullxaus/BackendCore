@@ -21,7 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 /** Интеграционные тесты REST API: проверка HTTP статусов 200/201/204/404 и заголовка Location. */
 @SpringBootTest
 @ActiveProfiles("test")
-class LeadRestControllerTest {
+public class LeadRestControllerTest {
 
   @Autowired private WebApplicationContext context;
 
