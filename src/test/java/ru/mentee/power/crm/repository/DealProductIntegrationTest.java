@@ -246,4 +246,3 @@ public class DealProductIntegrationTest {
     Files.write(outFile, lines);
   }
 }
-
