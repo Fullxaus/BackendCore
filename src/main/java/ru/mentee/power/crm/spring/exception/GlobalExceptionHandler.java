@@ -113,6 +113,40 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 
+  /** Обрабатывает EmailAlreadyExistsException (409 Conflict). */
+  @ExceptionHandler(EmailAlreadyExistsException.class)
+  public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(
+      EmailAlreadyExistsException ex, WebRequest request) {
+    String path =
+        request.getDescription(false).startsWith("uri=")
+            ? request.getDescription(false).substring(4)
+            : request.getDescription(false);
+    ErrorResponse errorResponse =
+        new ErrorResponse(
+            LocalDateTime.now(), HttpStatus.CONFLICT.value(), "Conflict", ex.getMessage(), path);
+    log.warn("Email already exists: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+  }
+
+  /** Обрабатывает InvalidStatusException (400 Bad Request). */
+  @ExceptionHandler(InvalidStatusException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidStatus(
+      InvalidStatusException ex, WebRequest request) {
+    String path =
+        request.getDescription(false).startsWith("uri=")
+            ? request.getDescription(false).substring(4)
+            : request.getDescription(false);
+    ErrorResponse errorResponse =
+        new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            "Bad Request",
+            ex.getMessage(),
+            path);
+    log.warn("Invalid status: {}", ex.getMessage());
+    return ResponseEntity.badRequest().body(errorResponse);
+  }
+
   /**
    * Fallback обработчик для всех непредвиденных исключений (500 Internal Server Error).
    *
