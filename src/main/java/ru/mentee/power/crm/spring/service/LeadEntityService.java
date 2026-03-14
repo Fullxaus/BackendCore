@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mentee.power.crm.entity.LeadEntity;
 import ru.mentee.power.crm.repository.LeadRepository;
+import ru.mentee.power.crm.spring.dto.UpdateLeadRequest;
+import ru.mentee.power.crm.spring.exception.DuplicateEmailException;
+import ru.mentee.power.crm.spring.exception.EntityNotFoundException;
+import ru.mentee.power.crm.spring.mapper.LeadMapper;
 
 /**
  * Сервис для работы с LeadEntity через JPA репозиторий. Использует новые методы репозитория:
@@ -21,9 +25,66 @@ import ru.mentee.power.crm.repository.LeadRepository;
 public class LeadEntityService {
 
   private final LeadRepository repository;
+  private final LeadMapper leadMapper;
 
-  public LeadEntityService(LeadRepository repository) {
+  public LeadEntityService(LeadRepository repository, LeadMapper leadMapper) {
     this.repository = repository;
+    this.leadMapper = leadMapper;
+  }
+
+  // ========== Simple CRUD helpers for REST layer ==========
+
+  public List<LeadEntity> findAll() {
+    return repository.findAll();
+  }
+
+  public Optional<LeadEntity> findById(UUID id) {
+    return repository.findById(id);
+  }
+
+  /** Возвращает лида по ID или выбрасывает EntityNotFoundException. */
+  public LeadEntity getLeadById(UUID id) {
+    return repository
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Lead", id.toString()));
+  }
+
+  /** Создаёт лида с проверкой уникальности email. При дубликате — 409 Conflict. */
+  public LeadEntity createLead(LeadEntity entity) {
+    if (repository.existsByEmail(entity.getEmail())) {
+      throw new DuplicateEmailException(entity.getEmail());
+    }
+    return repository.save(entity);
+  }
+
+  /** Обновляет лида по ID. При отсутствии — EntityNotFoundException (404). */
+  public LeadEntity updateLead(UUID id, UpdateLeadRequest request) {
+    LeadEntity lead =
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Lead", id.toString()));
+    leadMapper.updateEntity(request, lead);
+    return repository.save(lead);
+  }
+
+  /** Удаляет лида по ID. При отсутствии — EntityNotFoundException (404). */
+  public void deleteLead(UUID id) {
+    if (!repository.existsById(id)) {
+      throw new EntityNotFoundException("Lead", id.toString());
+    }
+    repository.deleteById(id);
+  }
+
+  public LeadEntity save(LeadEntity entity) {
+    return repository.save(entity);
+  }
+
+  public boolean existsById(UUID id) {
+    return repository.existsById(id);
+  }
+
+  public void deleteById(UUID id) {
+    repository.deleteById(id);
   }
 
   // ========== Simple CRUD helpers for REST layer ==========
