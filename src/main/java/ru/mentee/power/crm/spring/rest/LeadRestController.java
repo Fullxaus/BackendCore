@@ -43,18 +43,15 @@ public class LeadRestController {
   @GetMapping("/{id}")
   public ResponseEntity<LeadResponse> getLeadById(
       @PathVariable @NotNull(message = "ID лида обязателен") UUID id) {
-    return leadEntityService
-        .findById(id)
-        .map(leadMapper::toResponse)
-        .map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
+    LeadEntity lead = leadEntityService.getLeadById(id);
+    return ResponseEntity.ok(leadMapper.toResponse(lead));
   }
 
   @PostMapping
   public ResponseEntity<LeadResponse> createLead(@Valid @RequestBody CreateLeadRequest request) {
     LeadEntity entity = leadMapper.toEntity(request);
     entity.setCreatedAt(Instant.now());
-    LeadEntity saved = leadEntityService.save(entity);
+    LeadEntity saved = leadEntityService.createLead(entity);
     LeadResponse response = leadMapper.toResponse(saved);
     URI location = URI.create("/api/leads/" + response.id());
     return ResponseEntity.created(location).body(response);
@@ -64,25 +61,14 @@ public class LeadRestController {
   public ResponseEntity<LeadResponse> updateLead(
       @PathVariable @NotNull(message = "ID лида обязателен") UUID id,
       @Valid @RequestBody UpdateLeadRequest request) {
-    return leadEntityService
-        .findById(id)
-        .map(
-            entity -> {
-              leadMapper.updateEntity(request, entity);
-              LeadEntity saved = leadEntityService.save(entity);
-              LeadResponse response = leadMapper.toResponse(saved);
-              return ResponseEntity.ok(response);
-            })
-        .orElseGet(() -> ResponseEntity.notFound().build());
+    LeadEntity saved = leadEntityService.updateLead(id, request);
+    return ResponseEntity.ok(leadMapper.toResponse(saved));
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteLead(
       @PathVariable @NotNull(message = "ID лида обязателен") UUID id) {
-    if (!leadEntityService.existsById(id)) {
-      return ResponseEntity.notFound().build();
-    }
-    leadEntityService.deleteById(id);
+    leadEntityService.deleteLead(id);
     return ResponseEntity.noContent().build();
   }
 }
