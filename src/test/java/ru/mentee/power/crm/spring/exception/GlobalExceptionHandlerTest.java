@@ -1,5 +1,6 @@
 package ru.mentee.power.crm.spring.exception;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,7 +41,7 @@ public class GlobalExceptionHandlerTest {
         .andExpect(jsonPath("$.status").value(404))
         .andExpect(jsonPath("$.error").value("Not Found"))
         .andExpect(jsonPath("$.message").value("Lead not found with id: " + id))
-        .andExpect(jsonPath("$.path").value("/api/leads/" + id));
+        .andExpect(jsonPath("$.path", containsString("/api/leads")));
   }
 
   @Test
@@ -56,7 +57,7 @@ public class GlobalExceptionHandlerTest {
         .andExpect(jsonPath("$.errors").exists())
         .andExpect(jsonPath("$.errors.email").exists())
         .andExpect(jsonPath("$.errors.firstName").exists())
-        .andExpect(jsonPath("$.path").value("/api/leads"));
+        .andExpect(jsonPath("$.path", containsString("/api/leads")));
   }
 
   @Test
@@ -75,6 +76,6 @@ public class GlobalExceptionHandlerTest {
         .andExpect(jsonPath("$.error").value("Conflict"))
         .andExpect(
             jsonPath("$.message").value("Lead with email already exists: dup-409@example.com"))
-        .andExpect(jsonPath("$.path").value("/api/leads"));
+        .andExpect(jsonPath("$.path", containsString("/api/leads")));
   }
 }

@@ -7,6 +7,7 @@ plugins {
     id 'org.springframework.boot' version '4.0.0'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'com.diffplug.spotless' version '6.25.0'
+    id 'org.openapi.generator' version '7.1.0'
 }
 
 group = 'ru.mentee.power'
@@ -20,6 +21,7 @@ ext {
     jteVersion = '3.2.1'
     lombokVersion = '1.18.38'
     liquibaseVersion = '4.24.0'
+    springdocVersion = '2.3.0'
 }
 
 dependencies {
@@ -52,6 +54,9 @@ dependencies {
 
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
 
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
@@ -108,6 +113,32 @@ tasks.withType(JavaCompile).configureEach {
             "-Amapstruct.unmappedTargetPolicy=ERROR"
     ]
 }
+
+openApiGenerate {
+    generatorName = 'spring'
+    def specFile = file("${rootProject.projectDir}/src/main/resources/api/api-spec.yaml")
+    inputSpec = specFile.absolutePath.replace(File.separator, '/')
+    outputDir = "${buildDir}/generated"
+    apiPackage = 'ru.mentee.power.crm.spring.rest.generated'
+    modelPackage = 'ru.mentee.power.crm.spring.dto.generated'
+    configOptions = [
+        interfaceOnly       : 'true',
+        useTags             : 'true',
+        dateLibrary         : 'java8',
+        useSpringBoot3      : 'true',
+        documentationProvider: 'none'
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "${buildDir}/generated/src/main/java"
+        }
+    }
+}
+
+compileJava.dependsOn tasks.named('openApiGenerate')
 
 application {
     mainClass = 'ru.mentee.power.crm.Application'
