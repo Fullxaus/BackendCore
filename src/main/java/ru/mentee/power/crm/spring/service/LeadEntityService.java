@@ -87,28 +87,6 @@ public class LeadEntityService {
     repository.deleteById(id);
   }
 
-  // ========== Simple CRUD helpers for REST layer ==========
-
-  public List<LeadEntity> findAll() {
-    return repository.findAll();
-  }
-
-  public Optional<LeadEntity> findById(UUID id) {
-    return repository.findById(id);
-  }
-
-  public LeadEntity save(LeadEntity entity) {
-    return repository.save(entity);
-  }
-
-  public boolean existsById(UUID id) {
-    return repository.existsById(id);
-  }
-
-  public void deleteById(UUID id) {
-    repository.deleteById(id);
-  }
-
   // ========== Derived Methods ==========
 
   /** Поиск лида по email (derived method). */
