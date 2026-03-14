@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mentee.power.crm.entity.LeadEntity;
 import ru.mentee.power.crm.repository.LeadRepository;
-import ru.mentee.power.crm.spring.dto.UpdateLeadRequest;
 import ru.mentee.power.crm.spring.exception.DuplicateEmailException;
 import ru.mentee.power.crm.spring.exception.EntityNotFoundException;
 import ru.mentee.power.crm.spring.mapper.LeadMapper;
@@ -58,12 +57,13 @@ public class LeadEntityService {
   }
 
   /** Обновляет лида по ID. При отсутствии — EntityNotFoundException (404). */
-  public LeadEntity updateLead(UUID id, UpdateLeadRequest request) {
+  public LeadEntity updateLead(
+      UUID id, ru.mentee.power.crm.spring.dto.generated.UpdateLeadRequest request) {
     LeadEntity lead =
         repository
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Lead", id.toString()));
-    leadMapper.updateEntity(request, lead);
+    leadMapper.updateEntityFromApi(request, lead);
     return repository.save(lead);
   }
 
