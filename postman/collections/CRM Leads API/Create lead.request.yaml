@@ -1,0 +1,42 @@
+$kind: http-request
+description: Создать лида. После 201 leadId сохраняется для следующих запросов.
+url: "{{baseUrl}}/api/leads"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: text
+  content: |-
+    {
+      "email": "ivan.petrov@example.com",
+      "firstName": "Иван",
+      "lastName": "Петров",
+      "company": "ООО Ромашка"
+    }
+scripts:
+  - type: afterResponse
+    code: >-
+      pm.test('Status 201 Created', function () {
+      pm.response.to.have.status(201); });
+
+      pm.test('Location header present', function () {
+        pm.expect(pm.response.headers.get('Location')).to.include('/api/leads/');
+      });
+
+      pm.test('Response has id, email, firstName, lastName, createdAt', function
+      () {
+        const body = pm.response.json();
+        pm.expect(body).to.have.property('id');
+        pm.expect(body).to.have.property('email');
+        pm.expect(body).to.have.property('firstName');
+        pm.expect(body).to.have.property('lastName');
+        pm.expect(body).to.have.property('createdAt');
+      });
+
+      if (pm.response.code === 201) {
+        const id = pm.response.json().id;
+        if (id) pm.collectionVariables.set('leadId', id);
+      }
+    language: text/javascript
+order: 2000

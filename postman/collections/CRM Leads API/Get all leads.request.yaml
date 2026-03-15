@@ -1,0 +1,16 @@
+$kind: http-request
+description: Получить список всех лидов.
+url: "{{baseUrl}}/api/leads"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', function () { pm.response.to.have.status(200); });
+      pm.test('Body is array', function () {
+        const body = pm.response.json();
+        pm.expect(body).to.be.an('array');
+      });
+    language: text/javascript
+order: 1000

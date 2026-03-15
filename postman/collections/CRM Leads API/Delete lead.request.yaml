@@ -1,0 +1,17 @@
+$kind: http-request
+description: Удалить лида. 204 — успех.
+url: "{{baseUrl}}/api/leads/{{leadId}}"
+method: DELETE
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 204 or 404', function () {
+        pm.expect([204, 404]).to.include(pm.response.code);
+      });
+      if (pm.response.code === 204) {
+        pm.test('Response body empty', function () {
+          pm.expect(pm.response.text()).to.be.empty;
+        });
+      }
+    language: text/javascript
+order: 5000

@@ -5,3 +5,8 @@ workspace:
 localResources:
   specs:
     - ..\src\main\resources\api\api-spec.yaml
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+cloudResources:
+  collections:
+    ..\postman\collections\CRM Leads API: 875e0dbc-9c4e-4c4e-979e-1425ea6fc5d5
