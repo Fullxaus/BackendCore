@@ -1,9 +1,9 @@
 {
   "info": {
+    "_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
     "name": "CRM Leads API",
     "description": "REST API для управления лидами — /api/leads. Запуск по порядку: Get all → Create lead → Get by ID → Update → Delete. Tests проверяют статус и структуру ответа.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "BackendCore"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8081" },
@@ -30,7 +30,11 @@
       "request": {
         "method": "GET",
         "header": [{ "key": "Accept", "value": "application/json" }],
-        "url": "{{baseUrl}}/api/leads",
+        "url": {
+          "raw": "{{baseUrl}}/api/leads",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "leads"]
+        },
         "description": "Получить список всех лидов."
       }
     },
@@ -72,7 +76,11 @@
           "mode": "raw",
           "raw": "{\n  \"email\": \"ivan.petrov@example.com\",\n  \"firstName\": \"Иван\",\n  \"lastName\": \"Петров\",\n  \"company\": \"ООО Ромашка\"\n}"
         },
-        "url": "{{baseUrl}}/api/leads",
+        "url": {
+          "raw": "{{baseUrl}}/api/leads",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "leads"]
+        },
         "description": "Создать лида. После 201 leadId сохраняется для следующих запросов."
       }
     },
@@ -101,7 +109,11 @@
       "request": {
         "method": "GET",
         "header": [{ "key": "Accept", "value": "application/json" }],
-        "url": "{{baseUrl}}/api/leads/{{leadId}}",
+        "url": {
+          "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "leads", "{{leadId}}"]
+        },
         "description": "Получить лида по ID. 200 после Create, 404 если ID не существует."
       }
     },
@@ -136,7 +148,11 @@
           "mode": "raw",
           "raw": "{\n  \"email\": \"ivan.petrov@example.com\",\n  \"firstName\": \"Иван\",\n  \"lastName\": \"Сидоров\",\n  \"company\": \"ООО Ромашка\"\n}"
         },
-        "url": "{{baseUrl}}/api/leads/{{leadId}}",
+        "url": {
+          "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "leads", "{{leadId}}"]
+        },
         "description": "Обновить лида. Проверка: lastName = Сидоров."
       }
     },
@@ -163,7 +179,11 @@
       "request": {
         "method": "DELETE",
         "header": [],
-        "url": "{{baseUrl}}/api/leads/{{leadId}}",
+        "url": {
+          "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "leads", "{{leadId}}"]
+        },
         "description": "Удалить лида. 204 — успех."
       }
     }

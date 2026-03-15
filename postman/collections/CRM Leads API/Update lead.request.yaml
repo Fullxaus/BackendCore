@@ -1,0 +1,30 @@
+$kind: http-request
+description: "Обновить лида. Проверка: lastName = Сидоров."
+url: "{{baseUrl}}/api/leads/{{leadId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: text
+  content: |-
+    {
+      "email": "ivan.petrov@example.com",
+      "firstName": "Иван",
+      "lastName": "Сидоров",
+      "company": "ООО Ромашка"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200 or 404', function () {
+        pm.expect([200, 404]).to.include(pm.response.code);
+      });
+      if (pm.response.code === 200) {
+        pm.test('lastName updated to Sidorov', function () {
+          const body = pm.response.json();
+          pm.expect(body.lastName).to.eql('Сидоров');
+        });
+      }
+    language: text/javascript
+order: 4000

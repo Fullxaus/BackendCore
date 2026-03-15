@@ -1,0 +1,7 @@
+$kind: collection
+description: "REST API для управления лидами — /api/leads. Запуск по порядку:
+  Get all → Create lead → Get by ID → Update → Delete. Tests проверяют статус и
+  структуру ответа."
+variables:
+  baseUrl: http://localhost:8081
+  leadId: 550e8400-e29b-41d4-a716-446655440000
