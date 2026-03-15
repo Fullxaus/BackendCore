@@ -1,21 +1,21 @@
 package ru.mentee.power.crm.spring.rest.problematic;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.mentee.power.crm.domain.Invitee;
 import ru.mentee.power.crm.spring.repository.InviteeRepository;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-
-@RestController
+/** Исключён из OpenAPI: Map в @RequestBody ломает генерацию схемы (/v3/api-docs → 500). */
+@Hidden
+@RestController("problematicInviteeController")
 public class InviteeController {
 
-  @Autowired
-  InviteeRepository repository;
+  @Autowired InviteeRepository repository;
 
   // TODO: Студент должен найти проблемы в этом методе
   @PostMapping("/getInvitees")
@@ -48,7 +48,6 @@ public class InviteeController {
     return repository.save(invitee);
   }
 
-
   @DeleteMapping("/invitees/{id}")
   public Invitee delete(@PathVariable UUID id) {
     Invitee invitee = repository.findById(id).orElse(null);
@@ -57,7 +56,6 @@ public class InviteeController {
     }
     return invitee;
   }
-
 
   @PutMapping("/invitees/{id}/status")
   public Invitee updateStatus(@PathVariable UUID id, @RequestBody Map<String, String> body) {

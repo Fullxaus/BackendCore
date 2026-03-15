@@ -7,7 +7,8 @@ import ru.mentee.power.crm.spring.rest.fixed.dto.CreateInviteeRequest;
 import ru.mentee.power.crm.spring.rest.fixed.dto.InviteeResponse;
 
 /**
- * Маппер Entity ↔ DTO  (fixed API).
+ * Маппер Entity ↔ DTO (fixed API).
+ *
  * @see ru.mentee.power.crm.spring.rest.fixed.InviteeController
  */
 @Mapper

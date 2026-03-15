@@ -31,16 +31,12 @@ public class InviteeService {
     this.mapper = mapper;
   }
 
-  /**
-   * Возвращает все объекты (без пагинации; для production рекомендуется Page).
-   */
+  /** Возвращает все объекты (без пагинации; для production рекомендуется Page). */
   public List<InviteeResponse> findAll() {
     return repository.findAll().stream().map(mapper::toResponse).toList();
   }
 
-  /**
-   * Возвращает объекты по id или выбрасывает EntityNotFoundException (404).
-   */
+  /** Возвращает объекты по id или выбрасывает EntityNotFoundException (404). */
   public InviteeResponse getById(UUID id) {
     Invitee invitee =
         repository
@@ -49,9 +45,7 @@ public class InviteeService {
     return mapper.toResponse(invitee);
   }
 
-  /**
-   * Создаёт объекты. При дубликате email — EmailAlreadyExistsException (409).
-   */
+  /** Создаёт объекты. При дубликате email — EmailAlreadyExistsException (409). */
   public InviteeResponse create(CreateInviteeRequest request) {
     if (repository.existsByEmail(request.email())) {
       throw new EmailAlreadyExistsException(request.email());
@@ -63,9 +57,7 @@ public class InviteeService {
     return mapper.toResponse(saved);
   }
 
-  /**
-   * Обновляет статус обхекта. При невалидном статусе — InvalidStatusException (400).
-   */
+  /** Обновляет статус обхекта. При невалидном статусе — InvalidStatusException (400). */
   public InviteeResponse updateStatus(UUID id, UpdateInviteeStatusRequest request) {
     Invitee invitee =
         repository
@@ -80,9 +72,7 @@ public class InviteeService {
     return mapper.toResponse(saved);
   }
 
-  /**
-   * Удаляет рбъект по id. При отсутствии — EntityNotFoundException (404).
-   */
+  /** Удаляет рбъект по id. При отсутствии — EntityNotFoundException (404). */
   public void delete(UUID id) {
     Invitee invitee =
         repository
