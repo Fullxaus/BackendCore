@@ -7,7 +7,9 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
+    # Основной вход — /swagger-ui.html (редирект на index). Прямой URL: /swagger-ui/index.html
     path: /swagger-ui.html
+    url: /v3/api-docs
     operationsSorter: method
     tagsSorter: alpha
 

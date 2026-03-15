@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: aa110f1d-c91b-409f-815b-297eac6d06c4
+
+localResources:
+  specs:
+    - ..\src\main\resources\api\api-spec.yaml

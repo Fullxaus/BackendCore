@@ -21,7 +21,7 @@ ext {
     jteVersion = '3.2.1'
     lombokVersion = '1.18.38'
     liquibaseVersion = '4.24.0'
-    springdocVersion = '2.3.0'
+    springdocVersion = '3.0.2'  // 2.3.x несовместим с Spring Boot 4 (ControllerAdviceBean)
 }
 
 dependencies {
@@ -56,6 +56,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    implementation 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.19'
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
 
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"

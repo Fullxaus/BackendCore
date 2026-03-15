@@ -1,0 +1,171 @@
+{
+  "info": {
+    "name": "CRM Leads API",
+    "description": "REST API для управления лидами — /api/leads. Запуск по порядку: Get all → Create lead → Get by ID → Update → Delete. Tests проверяют статус и структуру ответа.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "BackendCore"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8081" },
+    { "key": "leadId", "value": "550e8400-e29b-41d4-a716-446655440000" }
+  ],
+  "item": [
+    {
+      "name": "Get all leads",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Body is array', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/leads",
+        "description": "Получить список всех лидов."
+      }
+    },
+    {
+      "name": "Create lead",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 201 Created', function () { pm.response.to.have.status(201); });",
+              "pm.test('Location header present', function () {",
+              "  pm.expect(pm.response.headers.get('Location')).to.include('/api/leads/');",
+              "});",
+              "pm.test('Response has id, email, firstName, lastName, createdAt', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('id');",
+              "  pm.expect(body).to.have.property('email');",
+              "  pm.expect(body).to.have.property('firstName');",
+              "  pm.expect(body).to.have.property('lastName');",
+              "  pm.expect(body).to.have.property('createdAt');",
+              "});",
+              "if (pm.response.code === 201) {",
+              "  const id = pm.response.json().id;",
+              "  if (id) pm.collectionVariables.set('leadId', id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"ivan.petrov@example.com\",\n  \"firstName\": \"Иван\",\n  \"lastName\": \"Петров\",\n  \"company\": \"ООО Ромашка\"\n}"
+        },
+        "url": "{{baseUrl}}/api/leads",
+        "description": "Создать лида. После 201 leadId сохраняется для следующих запросов."
+      }
+    },
+    {
+      "name": "Get lead by ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 or 404', function () {",
+              "  pm.expect([200, 404]).to.include(pm.response.code);",
+              "});",
+              "if (pm.response.code === 200) {",
+              "  pm.test('Response is LeadResponse', function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.have.property('id');",
+              "    pm.expect(body.id).to.eql(pm.collectionVariables.get('leadId'));",
+              "  });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/leads/{{leadId}}",
+        "description": "Получить лида по ID. 200 после Create, 404 если ID не существует."
+      }
+    },
+    {
+      "name": "Update lead",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 or 404', function () {",
+              "  pm.expect([200, 404]).to.include(pm.response.code);",
+              "});",
+              "if (pm.response.code === 200) {",
+              "  pm.test('lastName updated to Sidorov', function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.lastName).to.eql('Сидоров');",
+              "  });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"ivan.petrov@example.com\",\n  \"firstName\": \"Иван\",\n  \"lastName\": \"Сидоров\",\n  \"company\": \"ООО Ромашка\"\n}"
+        },
+        "url": "{{baseUrl}}/api/leads/{{leadId}}",
+        "description": "Обновить лида. Проверка: lastName = Сидоров."
+      }
+    },
+    {
+      "name": "Delete lead",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 204 or 404', function () {",
+              "  pm.expect([204, 404]).to.include(pm.response.code);",
+              "});",
+              "if (pm.response.code === 204) {",
+              "  pm.test('Response body empty', function () {",
+              "    pm.expect(pm.response.text()).to.be.empty;",
+              "  });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/leads/{{leadId}}",
+        "description": "Удалить лида. 204 — успех."
+      }
+    }
+  ]
+}
